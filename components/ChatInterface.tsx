@@ -293,25 +293,26 @@ export default function ChatInterface() {
 
       <div className="flex flex-col flex-1 min-h-0">
         {/* ── Chat header bar ── */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-white/5 bg-slate-900/20">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-white">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-white/5 bg-slate-900/40 flex-shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span className="text-xs sm:text-sm font-semibold text-white truncate">
               {activeStation.icon} {activeStation.titleTh}
             </span>
             {state.studentName && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 max-w-[110px] sm:max-w-[180px] truncate flex-shrink-0">
                 👤 {state.studentName}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-shrink-0">
             {/* Edit name */}
             {state.studentName && (
               <button
                 id="change-name-btn"
                 onClick={() => showNameModal(true)}
-                className="px-2 py-1 rounded-lg text-[10px] text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-all"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-all text-xs"
                 title="เปลี่ยนชื่อ"
+                aria-label="เปลี่ยนชื่อ"
               >
                 ✏️
               </button>
@@ -322,10 +323,10 @@ export default function ChatInterface() {
                 id="export-chat-btn"
                 onClick={exportChat}
                 title="ส่งออกบทสนทนา"
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] text-slate-400 hover:text-slate-200 hover:bg-white/5 border border-transparent hover:border-white/10 transition-all"
               >
-                <Download size={11} />
-                <span>Export</span>
+                <Download size={12} />
+                <span className="hidden sm:inline">Export</span>
               </button>
             )}
             {/* Reset */}
@@ -334,10 +335,10 @@ export default function ChatInterface() {
                 id="reset-chat-btn"
                 onClick={() => setShowResetConfirm(true)}
                 title="รีเซ็ตบทสนทนา"
-                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] text-slate-500 hover:text-red-400 hover:bg-red-500/5 border border-transparent hover:border-red-500/20 transition-all"
+                className="flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-all"
               >
-                <RotateCcw size={11} />
-                <span>รีเซ็ต</span>
+                <RotateCcw size={12} />
+                <span className="hidden sm:inline">รีเซ็ต</span>
               </button>
             )}
           </div>
@@ -346,38 +347,38 @@ export default function ChatInterface() {
         {/* ── Messages area ── */}
         <div
           id="messages-container"
-          className="flex-1 overflow-y-auto px-4 py-6 space-y-5"
+          className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 sm:py-5 space-y-3 sm:space-y-4"
         >
           {isEmpty && (
             <div
               id="welcome-card"
-              className="flex flex-col items-center justify-center h-full text-center gap-4 py-12 animate-fade-in"
+              className="flex flex-col items-center justify-center min-h-full text-center gap-3 sm:gap-4 py-6 sm:py-10 animate-fade-in"
             >
               <div
                 className={cn(
-                  'w-20 h-20 rounded-2xl flex items-center justify-center text-4xl border shadow-lg',
+                  'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl border shadow-lg',
                   activeStation.bgColor,
                   activeStation.borderColor
                 )}
               >
                 {activeStation.icon}
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-white mb-1">
+              <div className="px-2">
+                <h2 className="text-lg sm:text-xl font-bold text-white mb-1">
                   {state.studentName ? `สวัสดี ${state.studentName}! ` : ''}Station {activeStation.number}: {activeStation.titleTh}
                 </h2>
-                <p className="text-sm text-slate-500 max-w-md">{activeStation.titleEn}</p>
+                <p className="text-xs sm:text-sm text-slate-400 max-w-md">{activeStation.titleEn}</p>
               </div>
               <div
                 className={cn(
-                  'max-w-sm p-4 rounded-xl border text-sm text-slate-300 leading-relaxed',
+                  'w-full max-w-sm p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm text-slate-300 leading-relaxed text-left',
                   activeStation.bgColor,
                   activeStation.borderColor
                 )}
               >
-                <p className="font-semibold text-white mb-1">🎯 วัตถุประสงค์</p>
-                <p>{activeStation.objective}</p>
-                <div className="mt-3 pt-3 border-t border-white/10 flex flex-col sm:flex-row gap-2 items-center justify-between">
+                <p className="font-semibold text-white mb-1">🎯 วัตถุประสงค์ประจำฐาน</p>
+                <p className="text-slate-200">{activeStation.objective}</p>
+                <div className="mt-3 pt-3 border-t border-white/10 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-between">
                   <span className="text-[11px] text-slate-400">
                     📍 {activeStation.zone}
                   </span>
@@ -385,24 +386,24 @@ export default function ChatInterface() {
                     <button
                       id="welcome-3d-model-btn"
                       onClick={() => toggle3DModel(true)}
-                      className="flex-1 sm:flex-none px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 transition-colors flex items-center justify-center gap-1"
                     >
-                      <Box size={12} />
+                      <Box size={13} />
                       <span>สำรวจเคส 3D</span>
                     </button>
                     <button
                       id="welcome-navigate-btn"
                       onClick={() => toggleNavigator(true)}
-                      className="flex-1 sm:flex-none px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 transition-colors flex items-center justify-center gap-1"
+                      className="flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 transition-colors flex items-center justify-center gap-1"
                     >
-                      <MapPin size={12} />
+                      <MapPin size={13} />
                       <span>นำทางไปโต๊ะนี้</span>
                     </button>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-slate-500">
-                พิมพ์คำถามหรือเลือก Quick Prompt ด้านล่างเพื่อเริ่มต้น
+              <p className="text-xs text-slate-500 px-4">
+                💡 พิมพ์ถาม AI ได้ทันที หรือแตะคำถามลัดด้านล่างเพื่อเริ่มการสืบค้น
               </p>
             </div>
           )}
@@ -419,12 +420,12 @@ export default function ChatInterface() {
 
         {/* ── Error banner ── */}
         {error && (
-          <div className="mx-4 mb-2 px-4 py-2.5 rounded-lg bg-red-900/30 border border-red-500/30 flex items-center gap-2 animate-fade-in">
+          <div className="mx-3 sm:mx-4 mb-2 px-3.5 py-2 rounded-xl bg-red-900/30 border border-red-500/30 flex items-center gap-2 animate-fade-in flex-shrink-0">
             <AlertCircle size={14} className="text-red-400 flex-shrink-0" />
-            <p className="text-xs text-red-300 flex-1">{error}</p>
+            <p className="text-xs text-red-300 flex-1 leading-snug">{error}</p>
             <button
               onClick={() => setError(null)}
-              className="text-red-500/60 hover:text-red-400 transition-colors"
+              className="text-red-500/60 hover:text-red-400 transition-colors p-1"
             >
               <X size={13} />
             </button>
@@ -432,52 +433,52 @@ export default function ChatInterface() {
         )}
 
         {/* ── Quick Prompts ── */}
-        <div className="px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar">
+        <div className="px-3 sm:px-4 pb-2 flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x flex-shrink-0">
           {QUICK_PROMPTS.map((prompt, i) => (
             <button
               key={i}
               id={`quick-prompt-${i}`}
               onClick={() => sendMessage(prompt)}
               disabled={state.isLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-white/[0.05] hover:bg-emerald-900/30 text-slate-400 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-ring flex-shrink-0"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-white/[0.05] hover:bg-emerald-900/30 text-slate-300 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-ring flex-shrink-0 active:scale-95"
             >
-              <Zap size={11} />
-              {prompt}
+              <Zap size={11} className="text-emerald-400" />
+              <span>{prompt}</span>
             </button>
           ))}
         </div>
 
         {/* ── Input Bar ── */}
-        <div className="px-4 pb-4">
-          <div className="glass rounded-2xl p-2">
+        <div className="px-3 sm:px-4 pb-3 sm:pb-4 flex-shrink-0">
+          <div className="glass rounded-2xl p-1.5 sm:p-2 border border-white/10 shadow-lg">
             {/* Image preview */}
             {imagePreview && (
-              <div className="flex items-center gap-2 px-2 py-1.5 mb-1">
+              <div className="flex items-center gap-2 px-2 py-1.5 mb-1.5 bg-slate-900/60 rounded-xl border border-white/10">
                 <div className="relative group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagePreview}
                     alt="Preview"
-                    className="h-14 w-14 object-cover rounded-lg border border-white/20"
+                    className="h-12 w-12 sm:h-14 sm:w-14 object-cover rounded-lg border border-white/20"
                   />
                   <button
                     id="remove-image-btn"
                     onClick={clearImage}
-                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-slate-800 border border-white/20 flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors"
                   >
                     <X size={11} />
                   </button>
                 </div>
-                <div className="text-xs text-slate-500">
-                  <p className="text-slate-400 font-medium flex items-center gap-1">
-                    <ImageIcon size={11} /> {imageFile?.name}
+                <div className="text-xs text-slate-400 min-w-0 flex-1">
+                  <p className="text-white font-medium flex items-center gap-1 truncate">
+                    <ImageIcon size={12} className="text-emerald-400 flex-shrink-0" /> <span className="truncate">{imageFile?.name}</span>
                   </p>
-                  <p>{imageFile ? (imageFile.size / 1024).toFixed(1) + ' KB' : ''}</p>
+                  <p className="text-[11px] text-slate-500">{imageFile ? (imageFile.size / 1024).toFixed(1) + ' KB' : ''}</p>
                 </div>
               </div>
             )}
 
-            <div className="flex items-end gap-2">
+            <div className="flex items-end gap-1 sm:gap-2">
               {/* File input */}
               <input
                 ref={fileInputRef}
@@ -493,8 +494,9 @@ export default function ChatInterface() {
                 id="attach-image-btn"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={state.isLoading}
-                className="p-2 rounded-xl text-slate-500 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0"
-                title="แนบรูปภาพ"
+                className="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0"
+                title="แนบรูปภาพอุปกรณ์หรือหน้าจอ"
+                aria-label="แนบรูปภาพ"
               >
                 <Paperclip size={18} />
               </button>
@@ -505,27 +507,28 @@ export default function ChatInterface() {
                 onClick={toggleVoice}
                 disabled={state.isLoading}
                 className={cn(
-                  'p-2 rounded-xl transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0',
+                  'p-2 sm:p-2.5 rounded-xl transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0',
                   isListening
                     ? 'text-red-400 bg-red-500/10 border border-red-500/30 animate-pulse'
-                    : 'text-slate-500 hover:text-violet-400 hover:bg-violet-900/20'
+                    : 'text-slate-400 hover:text-violet-400 hover:bg-violet-900/20'
                 )}
-                title={isListening ? 'หยุดฟัง' : 'พูด (Voice Input)'}
+                title={isListening ? 'หยุดฟัง' : 'พูดด้วยเสียง (Voice Input)'}
+                aria-label="Voice input"
               >
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
               </button>
 
-              {/* Textarea */}
+              {/* Textarea — text-base on mobile prevents iOS Safari auto-zoom! */}
               <textarea
                 ref={textareaRef}
                 id="chat-input"
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={isListening ? '🎙️ กำลังฟัง...' : 'พิมพ์ข้อความ... (Shift+Enter เพื่อขึ้นบรรทัดใหม่)'}
+                placeholder={isListening ? '🎙️ กำลังฟังเสียงคุณ...' : 'ถาม AI หรือเล่าอาการที่พบ...'}
                 rows={1}
                 disabled={state.isLoading}
-                className="flex-1 bg-transparent resize-none text-sm text-slate-200 placeholder-slate-600 outline-none py-2 px-1 max-h-40 disabled:opacity-50 leading-relaxed"
+                className="flex-1 bg-transparent resize-none text-base sm:text-sm text-slate-100 placeholder-slate-500 outline-none py-2 px-1.5 max-h-36 disabled:opacity-50 leading-relaxed"
               />
 
               {/* Send button */}
@@ -534,19 +537,20 @@ export default function ChatInterface() {
                 onClick={() => sendMessage(input)}
                 disabled={state.isLoading || (!input.trim() && !imageFile)}
                 className={cn(
-                  'p-2 rounded-xl transition-all duration-200 flex-shrink-0 focus-ring',
+                  'p-2.5 sm:p-2.5 rounded-xl transition-all duration-200 flex-shrink-0 focus-ring flex items-center justify-center min-w-[40px] min-h-[40px]',
                   input.trim() || imageFile
-                    ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20'
+                    ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95'
                     : 'bg-white/5 text-slate-600 cursor-not-allowed'
                 )}
                 title="ส่งข้อความ"
+                aria-label="ส่งข้อความ"
               >
                 <Send size={16} />
               </button>
             </div>
           </div>
-          <p className="text-[10px] text-slate-600 text-center mt-1.5">
-            ComCoach ใช้ AI — ข้อมูลทุกอย่างเป็นเพียงคำแนะนำ ให้ครูตรวจสอบผลสุดท้าย
+          <p className="text-[10px] text-slate-500 text-center mt-1.5 px-2">
+            ComCoach ใช้ AI ช่วยวิเคราะห์ — ทดลองตามกติกาความปลอดภัย แล้วบันทึกผลลงใบกิจกรรม
           </p>
         </div>
       </div>

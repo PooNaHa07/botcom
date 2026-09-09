@@ -118,24 +118,24 @@ export default function LabNavigatorModal() {
     >
       <div
         id="lab-navigator-modal"
-        className="relative w-full max-w-5xl max-h-[92vh] flex flex-col rounded-2xl bg-slate-900 border border-emerald-500/30 shadow-2xl shadow-emerald-950/40 overflow-hidden"
+        className="relative w-full max-w-5xl h-[96vh] sm:h-auto sm:max-h-[92vh] flex flex-col rounded-xl sm:rounded-2xl bg-slate-900 border border-emerald-500/30 shadow-2xl shadow-emerald-950/40 overflow-hidden"
       >
         {/* ── Modal Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 bg-slate-900/90 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-              <Navigation size={18} className="animate-pulse" />
+        <div className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-4 border-b border-white/10 bg-slate-900/90 flex-shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 flex-shrink-0">
+              <Navigation size={17} className="animate-pulse" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm sm:text-base font-bold text-white">
-                  ระบบนำทางห้องปฏิบัติการ & พิกัด GPS
+                <h2 className="text-xs sm:text-base font-bold text-white truncate">
+                  ระบบนำทางห้องปฏิบัติการ & GPS
                 </h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
-                  Lab Room 402
+                <span className="hidden xs:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-500/30">
+                  Lab 402
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="hidden sm:block text-xs text-slate-400 truncate">
                 ผังห้องคอมพิวเตอร์จำลองแบบ Real-time พร้อมพิกัดดาวเทียม
               </p>
             </div>
@@ -144,37 +144,30 @@ export default function LabNavigatorModal() {
           <button
             id="close-navigator-btn"
             onClick={() => toggleNavigator(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors focus-ring"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors focus-ring flex-shrink-0"
             aria-label="Close navigator"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* ── GPS Telemetry Banner ── */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-2.5 bg-slate-950/60 border-b border-white/5 text-xs text-slate-300 flex-shrink-0">
-          <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-3 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-slate-950/60 border-b border-white/5 text-xs text-slate-300 flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-1.5">
               <Satellite
-                size={14}
+                size={13}
                 className={cn(
                   gpsStatus === 'success' ? 'text-emerald-400' : 'text-amber-400'
                 )}
               />
-              <span className="text-slate-400">พิกัด GPS:</span>
-              <span className="font-mono font-medium text-emerald-300">
+              <span className="text-slate-400 text-[11px] sm:text-xs">GPS:</span>
+              <span className="font-mono text-[11px] sm:text-xs font-medium text-emerald-300">
                 {latitude !== null && longitude !== null
-                  ? `${latitude.toFixed(5)}° N, ${longitude.toFixed(5)}° E`
-                  : 'กำลังค้นหาสัญญาณ...'}
+                  ? `${latitude.toFixed(4)}° N, ${longitude.toFixed(4)}° E`
+                  : 'ค้นหาสัญญาณ...'}
               </span>
             </div>
-
-            {accuracy !== null && (
-              <div className="hidden sm:flex items-center gap-1 text-slate-400">
-                <span>ความแม่นยำ:</span>
-                <span className="font-mono text-slate-200">±{accuracy.toFixed(1)} ม.</span>
-              </div>
-            )}
 
             <div className="flex items-center gap-1.5">
               <span
@@ -185,12 +178,8 @@ export default function LabNavigatorModal() {
                     : 'bg-amber-400'
                 )}
               />
-              <span className="text-[11px] text-slate-300">
-                {gpsStatus === 'loading'
-                  ? 'กำลังเชื่อมต่อดาวเทียม...'
-                  : isSimulated
-                  ? 'พิกัดจำลองห้องแล็บ (Check-in สำเร็จ)'
-                  : 'เชื่อมต่อ GPS จริงสำเร็จ'}
+              <span className="text-[10px] sm:text-[11px] text-slate-400">
+                {isSimulated ? 'จำลองห้องแล็บ 402' : 'GPS จริงเชื่อมต่อแล้ว'}
               </span>
             </div>
           </div>
@@ -198,7 +187,7 @@ export default function LabNavigatorModal() {
           <button
             id="refresh-gps-btn"
             onClick={requestLocation}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors border border-white/10"
+            className="self-start sm:self-auto flex items-center gap-1 px-2 py-0.5 sm:py-1 rounded-md text-[10px] sm:text-[11px] font-medium bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors border border-white/10"
             title="อัปเดตพิกัด GPS ใหม่"
           >
             <RefreshCw size={11} className={gpsStatus === 'loading' ? 'animate-spin' : ''} />

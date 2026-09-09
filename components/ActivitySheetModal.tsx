@@ -69,43 +69,43 @@ export default function ActivitySheetModal() {
   return (
     <div
       id="activity-sheet-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="worksheet-title"
     >
       <div
         id="activity-sheet-container"
-        className="relative w-full max-w-5xl max-h-[92vh] flex flex-col bg-slate-900 border border-emerald-500/30 rounded-2xl shadow-2xl overflow-hidden print:m-0 print:p-0 print:border-none print:shadow-none print:max-h-none print:w-full"
+        className="relative w-full max-w-5xl h-[96vh] sm:h-auto sm:max-h-[92vh] flex flex-col bg-slate-900 border border-emerald-500/30 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden print:m-0 print:p-0 print:border-none print:shadow-none print:max-h-none print:w-full"
       >
         {/* ── Header (Screen only) ── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/80 flex-shrink-0 print:hidden">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <FileText size={20} />
+        <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-4 border-b border-white/10 bg-slate-950/80 flex-shrink-0 print:hidden">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+              <FileText size={18} />
             </div>
-            <div>
-              <h2 id="worksheet-title" className="text-base font-bold text-white flex items-center gap-2">
-                ใบกิจกรรมสำรวจอาการเสียของเครื่องคอมพิวเตอร์
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-normal">
-                  บันทึกแล้ว {filledCount}/4 ฐาน
+            <div className="min-w-0">
+              <h2 id="worksheet-title" className="text-xs sm:text-base font-bold text-white flex items-center gap-2 truncate">
+                <span>ใบกิจกรรมสำรวจอาการเสีย</span>
+                <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-normal">
+                  {filledCount}/4 ฐาน
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="hidden sm:block text-xs text-slate-400">
                 เอกสารบันทึกภารกิจ 6 ขั้นตอนตามหลักสูตรปฏิบัติการฮาร์ดแวร์
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button
               id="print-worksheet-btn"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-colors focus-ring"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-colors focus-ring"
               title="พิมพ์ใบกิจกรรมออกทางเครื่องพิมพ์ หรือบันทึกเป็น PDF"
             >
-              <Printer size={14} />
-              <span>พิมพ์ / PDF</span>
+              <Printer size={13} />
+              <span className="hidden sm:inline">พิมพ์ / PDF</span>
             </button>
             <button
               id="close-worksheet-modal-btn"
@@ -113,7 +113,7 @@ export default function ActivitySheetModal() {
               className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors focus-ring"
               aria-label="Close worksheet"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
@@ -147,9 +147,9 @@ export default function ActivitySheetModal() {
         </div>
 
         {/* ── Content Body (Scrollable on screen) ── */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
           {/* Student Info Bar (Screen) */}
-          <div className="p-4 rounded-xl bg-slate-850/80 border border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-3 print:hidden">
+          <div className="p-3 sm:p-4 rounded-xl bg-slate-850/80 border border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 print:hidden">
             <div>
               <label className="text-[11px] text-slate-400 font-medium flex items-center gap-1 mb-1">
                 <User size={12} className="text-emerald-400" />
@@ -161,7 +161,7 @@ export default function ActivitySheetModal() {
                 value={state.studentName}
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder="ระบุชื่อ-นามสกุล..."
-                className="w-full px-3 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+                className="w-full px-3 py-1.5 text-base sm:text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
               />
             </div>
             <div>
@@ -175,7 +175,7 @@ export default function ActivitySheetModal() {
                 value={currentData.studentId || ''}
                 onChange={(e) => handleFieldChange('studentId', e.target.value)}
                 placeholder="เช่น เลขที่ 12 หรือ รหัส 6601..."
-                className="w-full px-3 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                className="w-full px-3 py-1.5 text-base sm:text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-sky-500 focus:outline-none"
               />
             </div>
             <div>
@@ -189,7 +189,7 @@ export default function ActivitySheetModal() {
                 value={currentData.studentGroup || ''}
                 onChange={(e) => handleFieldChange('studentGroup', e.target.value)}
                 placeholder="เช่น กลุ่ม 1 ห้อง 402..."
-                className="w-full px-3 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none"
+                className="w-full px-3 py-1.5 text-base sm:text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-violet-500 focus:outline-none"
               />
             </div>
           </div>
@@ -278,31 +278,31 @@ export default function ActivitySheetModal() {
           </div>
 
           {/* Action Bar for Worksheet Form (Auto-fill / Save) */}
-          <div className="flex items-center justify-between print:hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 print:hidden">
             <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
               <span>ภารกิจผู้เรียน 6 ขั้นตอน</span>
-              <span className="text-[10px] text-slate-500 font-normal">
+              <span className="hidden sm:inline text-[10px] text-slate-500 font-normal">
                 (กรอกข้อมูลหรือกดปุ่มเพื่อดึงจาก AI)
               </span>
             </h4>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 id="auto-fill-worksheet-btn"
                 onClick={handleAutoFill}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 border border-emerald-500/30 transition-all focus-ring shadow-sm"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 border border-emerald-500/30 transition-all focus-ring shadow-sm"
                 title="ดึงข้อสรุปและขั้นตอนจากการสนทนากับ AI ลงในช่องด้านล่างให้อัตโนมัติ"
               >
                 <Sparkles size={13} className="text-emerald-400 animate-pulse" />
-                <span>ดึงข้อมูลจาก AI ComCoach</span>
+                <span>ดึงข้อมูลจาก AI</span>
               </button>
               <button
                 id="save-worksheet-btn"
                 onClick={handleSave}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors focus-ring"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white transition-colors focus-ring"
               >
                 <Save size={13} />
-                <span>บันทึกข้อมูล</span>
+                <span>บันทึก</span>
               </button>
             </div>
           </div>
@@ -310,21 +310,21 @@ export default function ActivitySheetModal() {
           {/* Toast notifications */}
           {autoFillToast && (
             <div className="p-2.5 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-300 flex items-center gap-2 animate-fade-in print:hidden">
-              <CheckCircle2 size={15} className="text-emerald-400" />
+              <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0" />
               <span>ดึงข้อมูลและสมมติฐานจากการสนทนากับ AI ลงในใบกิจกรรมสำเร็จแล้ว! ตรวจสอบและแก้ไขเพิ่มเติมได้เลยครับ</span>
             </div>
           )}
           {saveToast && (
             <div className="p-2.5 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-300 flex items-center gap-2 animate-fade-in print:hidden">
-              <CheckCircle2 size={15} className="text-emerald-400" />
+              <CheckCircle2 size={15} className="text-emerald-400 flex-shrink-0" />
               <span>บันทึกข้อมูลใบกิจกรรมเรียบร้อยแล้ว (จัดเก็บในเครื่องอัตโนมัติ)</span>
             </div>
           )}
 
           {/* ── 6 Mission Recording Fields (Matching the PDF) ── */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             {/* Step 1: สังเกต */}
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
@@ -332,7 +332,7 @@ export default function ActivitySheetModal() {
                   </span>
                   สังเกต (Observation)
                 </label>
-                <span className="text-[10px] text-slate-500">สิ่งที่มองเห็น / ได้ยิน / สัมผัสได้</span>
+                <span className="text-[10px] text-slate-500">สิ่งที่มองเห็น / ได้ยิน</span>
               </div>
               <textarea
                 id="worksheet-field-observation"
@@ -340,12 +340,12 @@ export default function ActivitySheetModal() {
                 value={currentData.observation}
                 onChange={(e) => handleFieldChange('observation', e.target.value)}
                 placeholder="ระบุสิ่งที่สังเกตเห็น เช่น ไม่มีไฟ LED พัดลมไม่หมุน หรือมีเสียง Beep code..."
-                className="w-full p-2.5 text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y"
+                className="w-full p-2.5 text-base sm:text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y leading-relaxed"
               />
             </div>
 
             {/* Step 2: ระบุปัญหา */}
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
@@ -353,7 +353,7 @@ export default function ActivitySheetModal() {
                   </span>
                   ระบุปัญหา (Problem Definition)
                 </label>
-                <span className="text-[10px] text-slate-500">ข้อสรุปปัญหาที่แท้จริง</span>
+                <span className="text-[10px] text-slate-500">ข้อสรุปปัญหาแท้จริง</span>
               </div>
               <textarea
                 id="worksheet-field-problem"
@@ -361,20 +361,20 @@ export default function ActivitySheetModal() {
                 value={currentData.problemStatement}
                 onChange={(e) => handleFieldChange('problemStatement', e.target.value)}
                 placeholder="ระบุปัญหาให้ชัดเจน เช่น เครื่องไม่ได้รับไฟฟ้าจากภายนอก หรือ POST ไม่ผ่าน..."
-                className="w-full p-2.5 text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y"
+                className="w-full p-2.5 text-base sm:text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y leading-relaxed"
               />
             </div>
 
             {/* Step 3: วิเคราะห์อย่างน้อย 3 สาเหตุ */}
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 md:col-span-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 md:col-span-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px]">
                     3
                   </span>
-                  วิเคราะห์อย่างน้อย 3 สาเหตุ (Analyze at least 3 Causes) *สำคัญ*
+                  วิเคราะห์อย่างน้อย 3 สาเหตุ (3 Causes) *สำคัญ*
                 </label>
-                <span className="text-[10px] text-amber-400/80">กฎ 3 สาเหตุก่อนลงมือแก้ไข</span>
+                <span className="text-[10px] text-amber-400/80">กฎ 3 สาเหตุ</span>
               </div>
               <textarea
                 id="worksheet-field-hypotheses"
@@ -382,12 +382,12 @@ export default function ActivitySheetModal() {
                 value={currentData.hypotheses}
                 onChange={(e) => handleFieldChange('hypotheses', e.target.value)}
                 placeholder="1. สาเหตุที่หนึ่ง: ...&#10;2. สาเหตุที่สอง: ...&#10;3. สาเหตุที่สาม: ..."
-                className="w-full p-2.5 text-xs bg-slate-900/90 border border-amber-500/30 rounded-lg text-slate-200 placeholder-slate-500 focus:border-amber-400 focus:outline-none resize-y font-mono"
+                className="w-full p-2.5 text-base sm:text-xs bg-slate-900/90 border border-amber-500/30 rounded-lg text-slate-200 placeholder-slate-500 focus:border-amber-400 focus:outline-none resize-y font-mono leading-relaxed"
               />
             </div>
 
             {/* Step 4: วางแผนตรวจสอบ */}
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
@@ -395,7 +395,7 @@ export default function ActivitySheetModal() {
                   </span>
                   วางแผนตรวจสอบ (Inspection Plan)
                 </label>
-                <span className="text-[10px] text-slate-500">ลำดับก่อน-หลัง (นอกสู่ใน)</span>
+                <span className="text-[10px] text-slate-500">ลำดับก่อน-หลัง</span>
               </div>
               <textarea
                 id="worksheet-field-inspection-plan"
@@ -403,12 +403,12 @@ export default function ActivitySheetModal() {
                 value={currentData.inspectionPlan}
                 onChange={(e) => handleFieldChange('inspectionPlan', e.target.value)}
                 placeholder="ขั้นตอนที่ 1 ตรวจ... &#10;ขั้นตอนที่ 2 ตรวจ..."
-                className="w-full p-2.5 text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y"
+                className="w-full p-2.5 text-base sm:text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y leading-relaxed"
               />
             </div>
 
             {/* Step 5: เสนอ/ปฏิบัติการแก้ไข */}
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
@@ -416,7 +416,7 @@ export default function ActivitySheetModal() {
                   </span>
                   เสนอ/ปฏิบัติการแก้ไข (Action & Evidence)
                 </label>
-                <span className="text-[10px] text-slate-500">มีหลักฐานก่อนเปลี่ยนอุปกรณ์</span>
+                <span className="text-[10px] text-slate-500">มีหลักฐานก่อนเปลี่ยน</span>
               </div>
               <textarea
                 id="worksheet-field-action"
@@ -424,20 +424,20 @@ export default function ActivitySheetModal() {
                 value={currentData.actionAndEvidence}
                 onChange={(e) => handleFieldChange('actionAndEvidence', e.target.value)}
                 placeholder="ระบุสิ่งที่ได้ลงมือทำ พร้อมหลักฐานที่ยืนยันว่าจุดนี้คือสาเหตุ..."
-                className="w-full p-2.5 text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y"
+                className="w-full p-2.5 text-base sm:text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y leading-relaxed"
               />
             </div>
 
             {/* Step 6: ระบุวิธีทดสอบผล */}
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 md:col-span-2">
+            <div className="p-3.5 sm:p-4 rounded-xl bg-slate-950/60 border border-white/10 space-y-2 md:col-span-2">
               <div className="flex items-center justify-between">
                 <label className="text-xs font-bold text-white flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">
                     6
                   </span>
-                  ระบุวิธีทดสอบผล (Verification & Test Method)
+                  ระบุวิธีทดสอบผล (Verification & Test)
                 </label>
-                <span className="text-[10px] text-slate-500">วิธีพิสูจน์ว่าเครื่องหายเป็นปกติ</span>
+                <span className="text-[10px] text-slate-500">วิธีพิสูจน์ว่าปกติ</span>
               </div>
               <textarea
                 id="worksheet-field-verification"
@@ -445,7 +445,7 @@ export default function ActivitySheetModal() {
                 value={currentData.verificationMethod}
                 onChange={(e) => handleFieldChange('verificationMethod', e.target.value)}
                 placeholder="เช่น เปิดเครื่องใหม่ สังเกตพัดลมหมุน ไฟ LED ติด หน้าจอแสดงผล และบูตเข้า Windows ได้อย่างสมบูรณ์..."
-                className="w-full p-2.5 text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y"
+                className="w-full p-2.5 text-base sm:text-xs bg-slate-900/90 border border-white/10 rounded-lg text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none resize-y leading-relaxed"
               />
             </div>
           </div>

@@ -16,6 +16,8 @@ import {
   Star,
   FileText,
   History,
+  PanelLeftClose,
+  X,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useChat } from '@/context/ChatContext'
@@ -31,7 +33,7 @@ function formatDuration(ms: number): string {
 }
 
 export default function Sidebar() {
-  const { state, setStation, toggleMissionStep, toggleNavigator, toggle3DModel, toggleActivitySheet, toggleHistoryModal } = useChat()
+  const { state, setStation, toggleSidebar, toggleMissionStep, toggleNavigator, toggle3DModel, toggleActivitySheet, toggleHistoryModal } = useChat()
   const [safetyExpanded, setSafetyExpanded] = useState(false)
   const [elapsed, setElapsed] = useState(0)
   const activeStation = STATIONS.find((s) => s.id === state.activeStationId)!
@@ -47,6 +49,21 @@ export default function Sidebar() {
     return () => clearInterval(timer)
   }, [state.sessionStartTime])
 
+  // Close sidebar on initial mobile load to show chat directly
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024 && state.sidebarOpen) {
+      toggleSidebar()
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Helper to close sidebar on mobile when action is triggered
+  const handleAction = (callback: () => void) => {
+    callback()
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      toggleSidebar()
+    }
+  }
+
   // Count ratings
   const ratings = Object.values(state.messageRatings)
   const positiveRatings = ratings.filter((r) => r === 1).length
@@ -55,10 +72,32 @@ export default function Sidebar() {
   if (!state.sidebarOpen) return null
 
   return (
-    <aside
-      id="sidebar"
-      className="w-72 flex-shrink-0 flex flex-col gap-4 p-4 border-r border-white/10 bg-slate-900/40 overflow-y-auto sidebar-transition"
-    >
+    <>
+      {/* Mobile backdrop */}
+      <div
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
+        onClick={toggleSidebar}
+        aria-hidden="true"
+      />
+
+      <aside
+        id="sidebar"
+        className="fixed inset-y-0 left-0 z-50 w-80 max-w-[85vw] flex flex-col gap-4 p-4 border-r border-white/10 bg-slate-900 shadow-2xl overflow-y-auto lg:relative lg:inset-auto lg:z-auto lg:w-72 xl:w-80 lg:shadow-none lg:bg-slate-900/40 sidebar-transition"
+      >
+        {/* Mobile Header with Close Button */}
+        <div className="flex items-center justify-between pb-2 border-b border-white/10 lg:hidden">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🛠️</span>
+            <h2 className="text-sm font-bold text-white">เมนูและการเรียนรู้</h2>
+          </div>
+          <button
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors focus-ring"
+            aria-label="Close sidebar"
+          >
+            <PanelLeftClose size={18} />
+          </button>
+        </div>
       {/* ── Student Name Card ── */}
       {state.studentName && (
         <div className="p-3 rounded-xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-500/20">
@@ -104,7 +143,7 @@ export default function Sidebar() {
         {/* Activity Sheet Card */}
         <button
           id="open-worksheet-sidebar-btn"
-          onClick={() => toggleActivitySheet(true)}
+          onClick={() => handleAction(() => toggleActivitySheet(true))}
           className="w-full p-2.5 rounded-xl bg-gradient-to-r from-emerald-950/80 to-slate-900 border border-emerald-500/40 hover:border-emerald-400/70 transition-all text-left group shadow-sm focus-ring"
         >
           <div className="flex items-center justify-between mb-1">
@@ -127,7 +166,7 @@ export default function Sidebar() {
         {/* Chat History Card */}
         <button
           id="open-history-sidebar-btn"
-          onClick={() => toggleHistoryModal(true)}
+          onClick={() => handleAction(() => toggleHistoryModal(true))}
           className="w-full p-2.5 rounded-xl bg-gradient-to-r from-violet-950/70 to-slate-900 border border-violet-500/30 hover:border-violet-400/60 transition-all text-left group shadow-sm focus-ring"
         >
           <div className="flex items-center justify-between mb-1">
@@ -147,7 +186,7 @@ export default function Sidebar() {
         {/* 3D Hardware Inspector Card */}
         <button
           id="open-3d-model-sidebar-btn"
-          onClick={() => toggle3DModel(true)}
+          onClick={() => handleAction(() => toggle3DModel(true))}
           className="w-full p-2.5 rounded-xl bg-gradient-to-r from-sky-950/70 to-slate-900 border border-sky-500/30 hover:border-sky-400/60 transition-all text-left group shadow-sm focus-ring"
         >
           <div className="flex items-center justify-between mb-1">
@@ -167,7 +206,7 @@ export default function Sidebar() {
         {/* Indoor GPS Navigator Card */}
         <button
           id="open-navigator-sidebar-btn"
-          onClick={() => toggleNavigator(true)}
+          onClick={() => handleAction(() => toggleNavigator(true))}
           className="w-full p-2.5 rounded-xl bg-gradient-to-r from-slate-900 to-slate-900 border border-white/10 hover:border-emerald-500/40 transition-all text-left group shadow-sm focus-ring"
         >
           <div className="flex items-center justify-between mb-1">
@@ -267,7 +306,7 @@ export default function Sidebar() {
               <button
                 key={station.id}
                 id={`sidebar-station-${station.number}`}
-                onClick={() => setStation(station.id)}
+                onClick={() => handleAction(() => setStation(station.id))}
                 className={cn(
                   'w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left transition-all duration-200 border focus-ring',
                   isActive
@@ -358,5 +397,6 @@ export default function Sidebar() {
         )}
       </section>
     </aside>
+  </>
   )
 }

@@ -171,39 +171,39 @@ export default function ChatHistoryModal() {
   return (
     <div
       id="chat-history-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in"
       role="dialog"
       aria-modal="true"
       aria-labelledby="history-modal-title"
     >
       <div
         id="chat-history-container"
-        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-slate-900 border border-emerald-500/30 rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-4xl h-[96vh] sm:h-auto sm:max-h-[90vh] flex flex-col bg-slate-900 border border-emerald-500/30 rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden"
       >
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-950/80 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <History size={20} />
+        <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-4 border-b border-white/10 bg-slate-950/80 flex-shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0">
+              <History size={18} />
             </div>
-            <div>
-              <h2 id="history-modal-title" className="text-base font-bold text-white flex items-center gap-2">
-                ประวัติการสนทนา (Chat History)
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-normal">
-                  รวม {totalAllMessages} ข้อความ
+            <div className="min-w-0">
+              <h2 id="history-modal-title" className="text-xs sm:text-base font-bold text-white flex items-center gap-2 truncate">
+                <span>ประวัติการสนทนา</span>
+                <span className="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-normal">
+                  {totalAllMessages} ข้อความ
                 </span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="hidden sm:block text-xs text-slate-400">
                 ประวัติถูกบันทึกอัตโนมัติแยกตามสถานี 1–4 และจัดเก็บในเบราว์เซอร์
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button
               id="export-all-history-btn"
               onClick={exportAllJSON}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-colors focus-ring"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 transition-colors focus-ring"
               title="ส่งออกประวัติทุกสถานีเป็นไฟล์ JSON"
             >
               <Download size={13} />
@@ -215,19 +215,19 @@ export default function ChatHistoryModal() {
               className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors focus-ring"
               aria-label="Close history"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
         {/* ── Filter & Search Bar ── */}
-        <div className="px-6 py-3 border-b border-white/10 bg-slate-900/60 flex flex-col sm:flex-row gap-3 items-center justify-between flex-shrink-0">
+        <div className="px-3.5 sm:px-6 py-2.5 sm:py-3 border-b border-white/10 bg-slate-900/60 flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-stretch sm:items-center justify-between flex-shrink-0">
           {/* Station selector tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x w-full sm:w-auto pb-0.5 sm:pb-0">
             <button
               onClick={() => setSelectedTab('all')}
               className={cn(
-                'px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border focus-ring',
+                'px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border focus-ring flex-shrink-0',
                 selectedTab === 'all'
                   ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300 shadow-sm'
                   : 'bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.06] hover:text-slate-200'
@@ -242,7 +242,7 @@ export default function ChatHistoryModal() {
                   key={s.id}
                   onClick={() => setSelectedTab(s.id)}
                   className={cn(
-                    'flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border focus-ring',
+                    'flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all border focus-ring flex-shrink-0',
                     selectedTab === s.id
                       ? `${s.bgColor} ${s.borderColor} ${s.color} shadow-sm`
                       : 'bg-white/[0.03] border-white/10 text-slate-400 hover:bg-white/[0.06] hover:text-slate-200'
@@ -257,7 +257,7 @@ export default function ChatHistoryModal() {
           </div>
 
           {/* Search box */}
-          <div className="relative w-full sm:w-64 flex-shrink-0">
+          <div className="relative w-full sm:w-60 flex-shrink-0">
             <Search
               size={14}
               className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500"
@@ -267,12 +267,12 @@ export default function ChatHistoryModal() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ค้นหาข้อความ..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-950/80 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+              className="w-full pl-8 pr-7 py-1.5 text-base sm:text-xs bg-slate-950/80 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs p-1"
               >
                 ✕
               </button>

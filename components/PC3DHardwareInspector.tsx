@@ -408,6 +408,87 @@ export default function PC3DHardwareInspector() {
       cameraRef.current.updateProjectionMatrix()
     }
 
+    // Touch gesture support for mobile devices
+    let touchStartX = 0
+    let touchStartY = 0
+    let prevTouchX = 0
+    let prevTouchY = 0
+    let initialPinchDist = 0
+    let isTouchDragging = false
+    let touchMoved = false
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        isTouchDragging = true
+        touchMoved = false
+        touchStartX = e.touches[0].clientX
+        touchStartY = e.touches[0].clientY
+        prevTouchX = e.touches[0].clientX
+        prevTouchY = e.touches[0].clientY
+      } else if (e.touches.length === 2) {
+        isTouchDragging = false
+        initialPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        )
+      }
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!pcGroup) return
+
+      if (e.touches.length === 1 && isTouchDragging) {
+        const curX = e.touches[0].clientX
+        const curY = e.touches[0].clientY
+        const deltaX = curX - prevTouchX
+        const deltaY = curY - prevTouchY
+
+        if (Math.abs(curX - touchStartX) > 5 || Math.abs(curY - touchStartY) > 5) {
+          touchMoved = true
+        }
+
+        pcGroup.rotation.y += deltaX * 0.009
+        pcGroup.rotation.x = Math.max(-0.6, Math.min(0.6, pcGroup.rotation.x + deltaY * 0.009))
+        prevTouchX = curX
+        prevTouchY = curY
+      } else if (e.touches.length === 2 && cameraRef.current) {
+        const curDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        )
+        const diff = initialPinchDist - curDist
+        const fov = cameraRef.current.fov + diff * 0.08
+        cameraRef.current.fov = Math.max(25, Math.min(65, fov))
+        cameraRef.current.updateProjectionMatrix()
+        initialPinchDist = curDist
+      }
+    }
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (isTouchDragging && !touchMoved && e.changedTouches.length === 1) {
+        // Tap on touch device -> raycast
+        const touch = e.changedTouches[0]
+        const rect = canvas.getBoundingClientRect()
+        mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1
+        mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1
+
+        raycaster.setFromCamera(mouse, camera)
+        const intersects = raycaster.intersectObjects(pcGroup.children, true)
+
+        for (const hit of intersects) {
+          let current: THREE.Object3D | null = hit.object
+          while (current && current !== pcGroup) {
+            if (partsMap.has(current.name)) {
+              setSelectedPartId(current.name)
+              break
+            }
+            current = current.parent
+          }
+        }
+      }
+      isTouchDragging = false
+    }
+
     // Raycaster for clicking 3D parts
     const raycaster = new THREE.Raycaster()
     const mouse = new THREE.Vector2()
@@ -437,6 +518,9 @@ export default function PC3DHardwareInspector() {
     window.addEventListener('mouseup', onMouseUp)
     canvas.addEventListener('wheel', onWheel, { passive: false })
     canvas.addEventListener('click', onCanvasClick)
+    canvas.addEventListener('touchstart', onTouchStart, { passive: true })
+    canvas.addEventListener('touchmove', onTouchMove, { passive: true })
+    canvas.addEventListener('touchend', onTouchEnd, { passive: true })
 
     // ── Animation Loop ─────────────────────────────────────────────────────
     let animId: number
@@ -449,7 +533,7 @@ export default function PC3DHardwareInspector() {
       }
 
       // Slow idle rotation if user enabled it and not dragging
-      if (isRotating && !isDragging && pcGroup) {
+      if (isRotating && !isDragging && !isTouchDragging && pcGroup) {
         pcGroup.rotation.y += 0.002
       }
 
@@ -482,6 +566,9 @@ export default function PC3DHardwareInspector() {
       window.removeEventListener('mouseup', onMouseUp)
       canvas.removeEventListener('wheel', onWheel)
       canvas.removeEventListener('click', onCanvasClick)
+      canvas.removeEventListener('touchstart', onTouchStart)
+      canvas.removeEventListener('touchmove', onTouchMove)
+      canvas.removeEventListener('touchend', onTouchEnd)
       window.removeEventListener('resize', handleResize)
       renderer.dispose()
     }
@@ -503,32 +590,32 @@ export default function PC3DHardwareInspector() {
   return (
     <div
       id="pc-3d-inspector-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-5 bg-slate-950/85 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-5 bg-slate-950/85 backdrop-blur-md animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) toggle3DModel(false)
       }}
     >
       <div
         id="pc-3d-inspector-modal"
-        className="relative w-full max-w-6xl max-h-[94vh] flex flex-col rounded-2xl bg-slate-900 border border-sky-500/30 shadow-2xl shadow-sky-950/50 overflow-hidden"
+        className="relative w-full max-w-6xl h-[95vh] sm:h-auto sm:max-h-[94vh] flex flex-col rounded-xl sm:rounded-2xl bg-slate-900 border border-sky-500/30 shadow-2xl shadow-sky-950/50 overflow-hidden"
       >
         {/* ── Modal Header ── */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/10 bg-slate-900/90 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-400">
-              <Box size={18} className="animate-spin-slow" />
+        <div className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3.5 border-b border-white/10 bg-slate-900/90 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-400 flex-shrink-0">
+              <Box size={16} className="animate-spin-slow" />
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm sm:text-base font-bold text-white">
-                  โมเดล 3D จำลองเคสคอมพิวเตอร์ & นำทางชิ้นส่วนที่น่าสงสัย
+                <h2 className="text-xs sm:text-base font-bold text-white truncate">
+                  โมเดล 3D จำลองเคสคอมพิวเตอร์
                 </h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-950 text-sky-400 border border-sky-500/30">
+                <span className="hidden xs:inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold bg-sky-950 text-sky-400 border border-sky-500/30">
                   Interactive 3D
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                คลิกที่ชิ้นส่วนในโมเดล 3D หรือเลือกจากรายการเพื่อซูมดูจุดตรวจสอบ
+              <p className="text-[11px] sm:text-xs text-slate-400 truncate">
+                ใช้นิ้วหมุน / ซูม หรือแตะชิ้นส่วนเพื่อตรวจสอบ
               </p>
             </div>
           </div>
@@ -536,49 +623,49 @@ export default function PC3DHardwareInspector() {
           <button
             id="close-3d-modal-btn"
             onClick={() => toggle3DModel(false)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors focus-ring"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors focus-ring flex-shrink-0"
             aria-label="Close 3D model"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* ── Active Station Context Strip ── */}
-        <div className="flex items-center justify-between px-5 py-2 bg-slate-950/70 border-b border-white/5 text-xs flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between px-3.5 sm:px-5 py-1.5 sm:py-2 bg-slate-950/70 border-b border-white/5 text-xs gap-1 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <span className="text-slate-400">สถานีปัจจุบัน:</span>
-            <span className={cn('font-bold flex items-center gap-1', activeStation.color)}>
+            <span className="text-slate-400 text-[11px] sm:text-xs">สถานี:</span>
+            <span className={cn('font-bold flex items-center gap-1 text-[11px] sm:text-xs', activeStation.color)}>
               <span>{activeStation.icon}</span>
               <span>Station {activeStation.number}: {activeStation.titleTh}</span>
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-            <Sparkles size={12} className="text-amber-400" />
-            <span>ชิ้นส่วนที่มีสีเรืองแสง คือจุดที่ต้องตรวจสอบสำหรับสถานีนี้</span>
+          <div className="flex items-center gap-1 text-slate-400 text-[10px] sm:text-[11px]">
+            <Sparkles size={11} className="text-amber-400 flex-shrink-0" />
+            <span className="truncate">ชิ้นส่วนเรืองแสง คือจุดสงสัยของสถานีนี้</span>
           </div>
         </div>
 
         {/* ── Main 3D Canvas + Diagnosis Split ── */}
         <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-0 overflow-y-auto">
           {/* ── Left / Center: Interactive 3D Viewport (7-8 Cols) ── */}
-          <div className="lg:col-span-7 xl:col-span-8 relative flex flex-col bg-slate-950 min-h-[380px] lg:min-h-[500px]">
+          <div className="lg:col-span-7 xl:col-span-8 relative flex flex-col bg-slate-950 min-h-[260px] sm:min-h-[360px] lg:min-h-[500px]">
             {/* 3D WebGL Canvas */}
             <canvas
               ref={canvasRef}
               id="pc-3d-canvas"
-              className="w-full h-full cursor-grab active:cursor-grabbing block"
+              className="w-full h-full cursor-grab active:cursor-grabbing block touch-none"
             />
 
             {/* 3D Viewport HUD Overlay Controls */}
-            <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 z-10 pointer-events-auto">
+            <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 sm:gap-1.5 z-10 pointer-events-auto max-w-[calc(100%-20px)]">
               <button
                 onClick={resetCameraOverview}
-                className="px-2.5 py-1 rounded-lg text-[11px] font-medium bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 backdrop-blur-sm transition-colors flex items-center gap-1"
+                className="px-2 sm:px-2.5 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10 backdrop-blur-sm transition-colors flex items-center gap-1"
                 title="มุมมองรวมทั้งหมด"
               >
-                <Eye size={12} />
-                <span>มุมมองรวม</span>
+                <Eye size={11} />
+                <span>รวม</span>
               </button>
 
               <button
