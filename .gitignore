@@ -1,0 +1,21 @@
+# Next.js
+.next/
+out/
+build/
+
+# Env
+.env
+.env.local
+.env.*.local
+.env.*
+
+# Node
+node_modules/
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+.DS_Store
+*.log
+.pnpm-debug.log*
