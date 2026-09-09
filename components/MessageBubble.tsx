@@ -179,26 +179,26 @@ export default function MessageBubble({ message }: Props) {
   return (
     <div
       className={cn(
-        'flex gap-3 message-enter group',
+        'flex gap-2 sm:gap-3 message-enter group',
         isCoach ? 'flex-row' : 'flex-row-reverse'
       )}
     >
       {/* Avatar */}
       <div
         className={cn(
-          'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 border mt-1',
+          'w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center flex-shrink-0 border mt-0.5 sm:mt-1 shadow-sm',
           isCoach
             ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400'
             : 'bg-slate-700/60 border-slate-600/40 text-slate-300'
         )}
       >
-        {isCoach ? <Bot size={16} /> : <User size={16} />}
+        {isCoach ? <Bot size={13} className="sm:w-4 sm:h-4" /> : <User size={13} className="sm:w-4 sm:h-4" />}
       </div>
 
       {/* Content */}
       <div
         className={cn(
-          'max-w-[78%] flex flex-col gap-1.5',
+          'max-w-[92%] sm:max-w-[85%] md:max-w-[78%] flex flex-col gap-1.5',
           isCoach ? 'items-start' : 'items-end'
         )}
       >
@@ -245,7 +245,7 @@ export default function MessageBubble({ message }: Props) {
               <div
                 key={i}
                 className={cn(
-                  'px-4 py-3 rounded-2xl text-sm leading-relaxed relative',
+                  'px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs sm:text-sm leading-relaxed relative',
                   isCoach
                     ? 'glass-emerald text-slate-100 rounded-tl-sm'
                     : 'glass-slate text-slate-200 rounded-tr-sm'

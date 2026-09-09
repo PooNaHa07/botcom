@@ -291,9 +291,9 @@ export default function ChatInterface() {
         />
       )}
 
-      <div className="flex flex-col flex-1 min-h-0">
-        {/* ── Chat header bar ── */}
-        <div className="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-white/5 bg-slate-900/40 flex-shrink-0">
+      <div className="flex flex-col flex-1 min-h-0 w-full max-w-full overflow-hidden">
+        {/* ── Chat header bar (shown on tablet/desktop, mobile uses top StationSelector) ── */}
+        <div className="hidden sm:flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2 border-b border-white/5 bg-slate-900/40 flex-shrink-0">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             <span className="text-xs sm:text-sm font-semibold text-white truncate">
               {activeStation.icon} {activeStation.titleTh}
@@ -347,12 +347,12 @@ export default function ChatInterface() {
         {/* ── Messages area ── */}
         <div
           id="messages-container"
-          className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 sm:py-5 space-y-3 sm:space-y-4"
+          className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 sm:px-4 py-2.5 sm:py-5 space-y-2.5 sm:space-y-4 w-full max-w-full"
         >
           {isEmpty && (
             <div
               id="welcome-card"
-              className="flex flex-col items-center justify-center min-h-full text-center gap-3 sm:gap-4 py-6 sm:py-10 animate-fade-in"
+              className="w-full max-w-md mx-auto flex flex-col items-center justify-center min-h-full text-center gap-3 sm:gap-4 py-4 sm:py-8 animate-fade-in px-1"
             >
               <div
                 className={cn(
@@ -433,14 +433,14 @@ export default function ChatInterface() {
         )}
 
         {/* ── Quick Prompts ── */}
-        <div className="px-3 sm:px-4 pb-2 flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x flex-shrink-0">
+        <div className="px-2.5 sm:px-4 pb-1.5 sm:pb-2 flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x flex-shrink-0">
           {QUICK_PROMPTS.map((prompt, i) => (
             <button
               key={i}
               id={`quick-prompt-${i}`}
               onClick={() => sendMessage(prompt)}
               disabled={state.isLoading}
-              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-white/[0.05] hover:bg-emerald-900/30 text-slate-300 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-ring flex-shrink-0 active:scale-95"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-white/[0.05] hover:bg-emerald-900/30 text-slate-300 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-ring flex-shrink-0 active:scale-95"
             >
               <Zap size={11} className="text-emerald-400" />
               <span>{prompt}</span>
@@ -449,12 +449,12 @@ export default function ChatInterface() {
         </div>
 
         {/* ── Input Bar ── */}
-        <div className="px-3 sm:px-4 pb-3 sm:pb-4 flex-shrink-0">
+        <div className="px-2.5 sm:px-4 pb-2 sm:pb-4 flex-shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <div className="glass rounded-2xl p-1.5 sm:p-2 border border-white/10 shadow-lg">
             {/* Image preview */}
             {imagePreview && (
-              <div className="flex items-center gap-2 px-2 py-1.5 mb-1.5 bg-slate-900/60 rounded-xl border border-white/10">
-                <div className="relative group">
+              <div className="mb-2 p-1.5 bg-slate-800/80 rounded-xl border border-white/10 flex items-center gap-2 relative">
+                <div className="relative flex-shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imagePreview}
@@ -518,7 +518,7 @@ export default function ChatInterface() {
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
               </button>
 
-              {/* Textarea — text-base on mobile prevents iOS Safari auto-zoom! */}
+              {/* Textarea — text-base on mobile prevents iOS Safari auto-zoom! min-w-0 prevents flex blowout */}
               <textarea
                 ref={textareaRef}
                 id="chat-input"
@@ -528,7 +528,7 @@ export default function ChatInterface() {
                 placeholder={isListening ? '🎙️ กำลังฟังเสียงคุณ...' : 'ถาม AI หรือเล่าอาการที่พบ...'}
                 rows={1}
                 disabled={state.isLoading}
-                className="flex-1 bg-transparent resize-none text-base sm:text-sm text-slate-100 placeholder-slate-500 outline-none py-2 px-1.5 max-h-36 disabled:opacity-50 leading-relaxed"
+                className="flex-1 min-w-0 bg-transparent resize-none text-base sm:text-sm text-slate-100 placeholder-slate-500 outline-none py-2 px-1.5 max-h-36 disabled:opacity-50 leading-relaxed"
               />
 
               {/* Send button */}
