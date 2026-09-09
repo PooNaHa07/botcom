@@ -198,13 +198,13 @@ export default function MessageBubble({ message }: Props) {
       {/* Content */}
       <div
         className={cn(
-          'max-w-[92%] sm:max-w-[85%] md:max-w-[78%] flex flex-col gap-1.5',
+          'min-w-0 flex-1 max-w-[88%] sm:max-w-[85%] md:max-w-[78%] flex flex-col gap-1.5',
           isCoach ? 'items-start' : 'items-end'
         )}
       >
         {/* Label + timestamp */}
         <span
-          className="text-[10px] text-slate-500 px-1 cursor-default select-none"
+          className="text-[10px] text-slate-500 px-1 cursor-default select-none truncate max-w-full"
           onMouseEnter={() => setTimeHovered(true)}
           onMouseLeave={() => setTimeHovered(false)}
           title={new Date(message.timestamp).toLocaleString('th-TH')}
@@ -245,7 +245,7 @@ export default function MessageBubble({ message }: Props) {
               <div
                 key={i}
                 className={cn(
-                  'px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs sm:text-sm leading-relaxed relative',
+                  'px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl text-xs sm:text-sm leading-relaxed relative min-w-0 max-w-full break-words break-anywhere',
                   isCoach
                     ? 'glass-emerald text-slate-100 rounded-tl-sm'
                     : 'glass-slate text-slate-200 rounded-tr-sm'
@@ -257,11 +257,11 @@ export default function MessageBubble({ message }: Props) {
                 )}
                 <div
                   className={cn(
-                    'space-y-1',
+                    'space-y-1 min-w-0 max-w-full break-words break-anywhere',
                     isCoach ? '[&_strong]:text-emerald-300 [&_code]:text-emerald-300' : '[&_strong]:text-slate-200'
                   )}
                 >
-                  {isCoach ? renderMarkdown(part.text) : <p className="text-sm leading-relaxed whitespace-pre-wrap">{part.text}</p>}
+                  {isCoach ? renderMarkdown(part.text) : <p className="text-sm leading-relaxed whitespace-pre-wrap break-words break-anywhere">{part.text}</p>}
                 </div>
               </div>
             )

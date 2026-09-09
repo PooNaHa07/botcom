@@ -49,9 +49,9 @@ export default function Sidebar() {
     return () => clearInterval(timer)
   }, [state.sessionStartTime])
 
-  // Close sidebar on initial mobile load to show chat directly
+  // Open sidebar on initial desktop load (>= 1024px), keep closed on mobile
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.innerWidth < 1024 && state.sidebarOpen) {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024 && !state.sidebarOpen) {
       toggleSidebar()
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps

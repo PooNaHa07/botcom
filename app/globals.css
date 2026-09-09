@@ -150,6 +150,10 @@ textarea {
 }
 
 /* ─── Prose-like message text ─────────────────────────────────────── */
+.message-text {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
 .message-text p { margin-bottom: 0.5rem; }
 .message-text p:last-child { margin-bottom: 0; }
 .message-text ul, .message-text ol { padding-left: 1.25rem; margin-bottom: 0.5rem; }
@@ -160,6 +164,11 @@ textarea {
   padding: 0.1em 0.35em;
   border-radius: 4px;
   font-size: 0.85em;
+  word-break: break-all;
+}
+.break-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* ─── Streaming cursor blink ──────────────────────────────────────── */

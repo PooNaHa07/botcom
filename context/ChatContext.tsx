@@ -121,7 +121,7 @@ const INITIAL_STATE: ChatState = {
     'station-4': buildMissionSteps(),
   },
   isLoading: false,
-  sidebarOpen: true,
+  sidebarOpen: false,
   navigatorOpen: false,
   model3DOpen: false,
   activitySheetOpen: false,

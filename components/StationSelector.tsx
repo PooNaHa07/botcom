@@ -54,11 +54,11 @@ export default function StationSelector() {
   }, [mobileToolsOpen])
 
   return (
-    <div id="app-header-container" className="flex flex-col flex-shrink-0 z-30 border-b border-white/10 bg-slate-900/95 backdrop-blur-md">
+    <div id="app-header-container" className="flex flex-col flex-shrink-0 z-30 border-b border-white/10 bg-slate-900/95 backdrop-blur-md w-full max-w-full min-w-0 overflow-hidden">
       {/* ── Main Top Bar ── */}
       <header
         id="app-header"
-        className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5"
+        className="flex items-center justify-between gap-2 px-3 sm:px-4 py-2 sm:py-2.5 w-full max-w-full min-w-0"
       >
         {/* Left: Sidebar toggle + ComCoach logo */}
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
@@ -286,7 +286,7 @@ export default function StationSelector() {
       </header>
 
       {/* ── Mobile Station Chips Bar (< md) ── */}
-      <div className="flex md:hidden items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x px-3 py-1.5 border-t border-white/5 bg-slate-950/40">
+      <div className="flex md:hidden items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x px-3 py-1.5 border-t border-white/5 bg-slate-950/40 w-full max-w-full min-w-0">
         {STATIONS.map((station) => {
           const isActive = station.id === state.activeStationId
           return (

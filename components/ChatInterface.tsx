@@ -291,7 +291,7 @@ export default function ChatInterface() {
         />
       )}
 
-      <div className="flex flex-col flex-1 min-h-0 w-full max-w-full overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 min-w-0 w-full max-w-full overflow-hidden">
         {/* ── Chat header bar (shown on tablet/desktop, mobile uses top StationSelector) ── */}
         <div className="hidden sm:flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2 border-b border-white/5 bg-slate-900/40 flex-shrink-0">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
@@ -347,7 +347,7 @@ export default function ChatInterface() {
         {/* ── Messages area ── */}
         <div
           id="messages-container"
-          className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 sm:px-4 py-2.5 sm:py-5 space-y-2.5 sm:space-y-4 w-full max-w-full"
+          className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 px-2.5 sm:px-4 py-2.5 sm:py-5 space-y-2.5 sm:space-y-4 w-full max-w-full"
         >
           {isEmpty && (
             <div
@@ -433,7 +433,7 @@ export default function ChatInterface() {
         )}
 
         {/* ── Quick Prompts ── */}
-        <div className="px-2.5 sm:px-4 pb-1.5 sm:pb-2 flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x flex-shrink-0">
+        <div className="w-full min-w-0 max-w-full px-2.5 sm:px-4 pb-1.5 sm:pb-2 flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-smooth touch-pan-x flex-shrink-0">
           {QUICK_PROMPTS.map((prompt, i) => (
             <button
               key={i}
@@ -442,15 +442,15 @@ export default function ChatInterface() {
               disabled={state.isLoading}
               className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium whitespace-nowrap bg-white/[0.05] hover:bg-emerald-900/30 text-slate-300 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus-ring flex-shrink-0 active:scale-95"
             >
-              <Zap size={11} className="text-emerald-400" />
+              <Zap size={11} className="text-emerald-400 flex-shrink-0" />
               <span>{prompt}</span>
             </button>
           ))}
         </div>
 
         {/* ── Input Bar ── */}
-        <div className="px-2.5 sm:px-4 pb-2 sm:pb-4 flex-shrink-0 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
-          <div className="glass rounded-2xl p-1.5 sm:p-2 border border-white/10 shadow-lg">
+        <div className="w-full min-w-0 max-w-full px-2.5 sm:px-4 pb-2 sm:pb-4 flex-shrink-0 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="glass rounded-2xl p-1.5 sm:p-2 border border-white/10 shadow-lg w-full min-w-0">
             {/* Image preview */}
             {imagePreview && (
               <div className="mb-2 p-1.5 bg-slate-800/80 rounded-xl border border-white/10 flex items-center gap-2 relative">
@@ -478,7 +478,7 @@ export default function ChatInterface() {
               </div>
             )}
 
-            <div className="flex items-end gap-1 sm:gap-2">
+            <div className="flex items-end gap-1 sm:gap-2 w-full min-w-0">
               {/* File input */}
               <input
                 ref={fileInputRef}
@@ -494,7 +494,7 @@ export default function ChatInterface() {
                 id="attach-image-btn"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={state.isLoading}
-                className="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0"
+                className="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-emerald-400 hover:bg-emerald-900/20 transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center"
                 title="แนบรูปภาพอุปกรณ์หรือหน้าจอ"
                 aria-label="แนบรูปภาพ"
               >
@@ -507,7 +507,7 @@ export default function ChatInterface() {
                 onClick={toggleVoice}
                 disabled={state.isLoading}
                 className={cn(
-                  'p-2 sm:p-2.5 rounded-xl transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0',
+                  'p-2 sm:p-2.5 rounded-xl transition-all duration-200 disabled:opacity-40 focus-ring flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center',
                   isListening
                     ? 'text-red-400 bg-red-500/10 border border-red-500/30 animate-pulse'
                     : 'text-slate-400 hover:text-violet-400 hover:bg-violet-900/20'
@@ -518,7 +518,7 @@ export default function ChatInterface() {
                 {isListening ? <MicOff size={18} /> : <Mic size={18} />}
               </button>
 
-              {/* Textarea — text-base on mobile prevents iOS Safari auto-zoom! min-w-0 prevents flex blowout */}
+              {/* Textarea — text-base (16px) on mobile prevents iOS Safari auto-zoom! min-w-0 prevents flex blowout */}
               <textarea
                 ref={textareaRef}
                 id="chat-input"
@@ -528,19 +528,19 @@ export default function ChatInterface() {
                 placeholder={isListening ? '🎙️ กำลังฟังเสียงคุณ...' : 'ถาม AI หรือเล่าอาการที่พบ...'}
                 rows={1}
                 disabled={state.isLoading}
-                className="flex-1 min-w-0 bg-transparent resize-none text-base sm:text-sm text-slate-100 placeholder-slate-500 outline-none py-2 px-1.5 max-h-36 disabled:opacity-50 leading-relaxed"
+                className="flex-1 min-w-0 bg-transparent resize-none text-base sm:text-sm text-slate-100 placeholder-slate-500 outline-none py-2 px-2 max-h-36 disabled:opacity-50 leading-relaxed"
               />
 
-              {/* Send button */}
+              {/* Send button — flex-shrink-0 with prominent touch target and status */}
               <button
                 id="send-message-btn"
                 onClick={() => sendMessage(input)}
                 disabled={state.isLoading || (!input.trim() && !imageFile)}
                 className={cn(
-                  'p-2.5 sm:p-2.5 rounded-xl transition-all duration-200 flex-shrink-0 focus-ring flex items-center justify-center min-w-[40px] min-h-[40px]',
+                  'p-2 sm:p-2.5 rounded-xl transition-all duration-200 flex-shrink-0 focus-ring flex items-center justify-center w-10 h-10 min-w-[40px] min-h-[40px]',
                   input.trim() || imageFile
-                    ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/20 active:scale-95'
-                    : 'bg-white/5 text-slate-600 cursor-not-allowed'
+                    ? 'bg-emerald-500 hover:bg-emerald-400 text-white shadow-lg shadow-emerald-500/25 active:scale-95'
+                    : 'bg-white/5 text-slate-500 hover:text-slate-400 border border-white/5 cursor-not-allowed opacity-50'
                 )}
                 title="ส่งข้อความ"
                 aria-label="ส่งข้อความ"
@@ -549,7 +549,7 @@ export default function ChatInterface() {
               </button>
             </div>
           </div>
-          <p className="text-[10px] text-slate-500 text-center mt-1.5 px-2">
+          <p className="text-[10px] text-slate-500 text-center mt-1.5 px-2 truncate">
             ComCoach ใช้ AI ช่วยวิเคราะห์ — ทดลองตามกติกาความปลอดภัย แล้วบันทึกผลลงใบกิจกรรม
           </p>
         </div>

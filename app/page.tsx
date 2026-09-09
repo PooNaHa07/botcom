@@ -15,7 +15,7 @@ export default function Home() {
   return (
     <main
       id="comcoach-app"
-      className="flex flex-col h-screen overflow-hidden"
+      className="flex flex-col h-[100dvh] min-h-[100dvh] max-h-[100dvh] w-full max-w-full overflow-hidden"
     >
       {/* Student name capture modal (shown on first visit) */}
       <StudentNameModal />
@@ -27,7 +27,7 @@ export default function Home() {
       <StationSelector />
 
       {/* Body: sidebar + chat */}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-1 min-h-0 min-w-0 w-full max-w-full overflow-hidden relative">
         <Sidebar />
         <ChatInterface />
       </div>
