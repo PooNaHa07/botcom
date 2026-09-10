@@ -1,29 +1,24 @@
 // components/PC3DHardwareInspector.tsx
 // Interactive 3D Computer Hardware Inspector & Fault Navigator using Three.js
-// Features: Ultra-detailed dual-chamber gaming PC case, spinning RGB fans, AIO liquid cooler with coolant tubes,
-// triple-fan GPU with backplate, ARGB RAM lightbars, tempered glass toggle, and dynamic lighting modes.
+// Custom Gaming PC Edition - Featuring authentic Ultra-HD textures from ASUS ROG Maximus XIII,
+// NVIDIA RTX 2060 GPU, Corsair CX750M PSU, G.Skill Trident Z RGB RAM, DeepCool Castle AIO Liquid Cooler, and Seagate HDD.
 
 'use client'
 
-import React, { useEffect, useRef, useState, useCallback } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import {
   Box,
   X,
   RotateCw,
-  ZoomIn,
-  ZoomOut,
   Sparkles,
   AlertTriangle,
   MessageSquare,
-  ChevronRight,
   Eye,
   Info,
   Layers,
   Palette,
-  Maximize2,
   Shield,
-  Zap,
 } from 'lucide-react'
 import { useChat } from '@/context/ChatContext'
 import { STATIONS } from '@/lib/stations'
@@ -52,17 +47,17 @@ export interface HardwarePart {
 export const HARDWARE_PARTS: HardwarePart[] = [
   {
     id: 'psu',
-    nameTh: 'Power Supply (PSU) & สวิตช์ไฟ',
-    nameEn: 'Power Supply Unit & AC Switch',
+    nameTh: 'Power Supply (Corsair CX750M 750W)',
+    nameEn: 'Corsair CX750M Bronze Modular PSU & AC Switch',
     icon: '🔌',
     stationIds: ['station-1', 'station-3'],
     color: 0xef4444, // Red
     position: [-1.2, -1.68, 0.0],
     size: [1.6, 0.9, 1.4],
     cameraTarget: [-1.2, -1.68, 0.0],
-    cameraPos: [-2.6, -1.2, 2.2],
+    cameraPos: [-2.8, -1.2, 2.2],
     description:
-      'แปลงไฟบ้าน AC 220V เป็นไฟกระแสตรง DC (+12V, +5V, +3.3V) เลี้ยงอุปกรณ์ทั้งหมด หากเสียหรือสวิตช์ปิดอยู่ เครื่องจะไม่ติดเลย ไม่มีไฟและพัดลม',
+      'แปลงไฟบ้าน AC 220V เป็นไฟกระแสตรง DC จ่ายให้บอร์ดและการ์ดจอ หากสวิตช์ปิดอยู่ สาย AC หลวม หรือวงจรภายในช็อต เครื่องจะไม่ติดเลย ไม่มีไฟและพัดลม',
     checkSteps: [
       'ตรวจสวิตช์ I/O ด้านหลัง PSU ว่าเปิดอยู่ที่ตำแหน่ง ( | ) หรือไม่',
       'ตรวจสายไฟ AC 3 รู เสียบแน่นกับเต้าเสียบผนังและหลังเคส',
@@ -71,12 +66,12 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     ],
     evidencePrompt: 'ต้องมีผลทดสอบสายไฟ หรือวัดแรงดันไฟจากพาวเวอร์ซัพพลายก่อนเปลี่ยน',
     safetyWarning: 'ถอดปลั๊กทุกครั้งก่อนตรวจ ห้ามเปิดฝาครอบ PSU เด็ดขาดเพราะมีประจุไฟฟ้าแรงสูงตกค้าง',
-    quickQuestion: 'ComCoach ครับ ผมตรวจสอบสวิตช์หลัง PSU และสาย AC แล้ว เสียบแน่นปกติ ควรตรวจสาย 24-pin ต่อไหมครับ?',
+    quickQuestion: 'ComCoach ครับ ผมตรวจสอบสวิตช์หลัง Corsair CX750M และสาย AC แล้ว เสียบแน่นปกติ ควรตรวจสาย 24-pin ต่อไหมครับ?',
   },
   {
     id: 'front-panel',
     nameTh: 'สายสวิตช์เปิดเครื่อง (Power SW Header)',
-    nameEn: 'Front Panel Power Switch Header',
+    nameEn: 'Front Panel Power Switch Header & Front I/O',
     icon: '🔘',
     stationIds: ['station-1'],
     color: 0xf59e0b, // Amber
@@ -97,17 +92,17 @@ export const HARDWARE_PARTS: HardwarePart[] = [
   },
   {
     id: 'ram',
-    nameTh: 'RAM (แรม) & สล็อต DIMM Dual-Channel',
-    nameEn: 'DDR5 RGB RAM & DIMM Slots',
+    nameTh: 'RAM (G.Skill Trident Z RGB DDR4/DDR5)',
+    nameEn: 'G.Skill Trident Z RGB Modules & DIMM Slots',
     icon: '💾',
     stationIds: ['station-2', 'station-3', 'station-4'],
     color: 0x3b82f6, // Blue
-    position: [0.55, 0.65, -0.85],
-    size: [0.5, 1.4, 0.25],
-    cameraTarget: [0.55, 0.65, -0.85],
-    cameraPos: [1.1, 0.9, 1.2],
+    position: [0.6, 0.65, -0.85],
+    size: [0.55, 1.4, 0.25],
+    cameraTarget: [0.6, 0.65, -0.85],
+    cameraPos: [1.2, 0.9, 1.2],
     description:
-      'หน่วยความจำชั่วคราวความเร็วสูง หากหน้าสัมผัสสกปรก ขั้วทองแดงเป็นคราบออกไซด์ หรือหลวม เครื่องจะติดมีไฟ พัดลมหมุน แต่จอดำสนิท',
+      'แรม G.Skill Trident Z RGB พร้อมฮีทซิงค์อลูมิเนียมและแถบไฟ ARGB หากหน้าสัมผัสสกปรก ขั้วทองแดงเป็นคราบออกไซด์ หรือหลวม เครื่องจะติดมีไฟ แต่จอดำสนิท',
     checkSteps: [
       'สังเกตสลักล็อกหัว-ท้ายของสล็อตแรมว่าดีดเข้าที่แน่นหนาทั้งสองฝั่งหรือไม่',
       'ถอดปลั๊กเครื่อง แล้วปลดแรมออกมาตรวจดูคราบคาร์บอน/ฝุ่นที่ขอบทองแดง',
@@ -116,12 +111,12 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     ],
     evidencePrompt: 'ต้องตรวจสอบเสียงสัญญาณเตือน (Beep Code) หรือไฟ Debug LED บนบอร์ดก่อนสรุปว่าแรมเสีย',
     safetyWarning: 'ห้ามใช้มือเปล่าสัมผัสขั้วทองแดงเด็ดขาด ไขมันและความชื้นจะก่อคราบออกไซด์',
-    quickQuestion: 'ComCoach ครับ แรมถอดออกมาแล้ว สังเกตเห็นคราบที่ขั้วทองแดง ควรใช้ยางลบดินสอทำความสะอาดอย่างไรครับ?',
+    quickQuestion: 'ComCoach ครับ แรม Trident Z ถอดออกมาแล้ว สังเกตเห็นคราบที่ขั้วทองแดง ควรใช้ยางลบดินสอทำความสะอาดอย่างไรครับ?',
   },
   {
     id: 'gpu',
-    nameTh: 'การ์ดจอแยก (Triple-Fan GPU / PCIe)',
-    nameEn: 'High-End Graphics Card (GPU)',
+    nameTh: 'การ์ดจอแยก (NVIDIA GeForce RTX 2060)',
+    nameEn: 'NVIDIA GeForce RTX 2060 Dedicated Graphics',
     icon: '🖥️',
     stationIds: ['station-2'],
     color: 0x8b5cf6, // Purple
@@ -130,7 +125,7 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     cameraTarget: [0.0, -0.4, 0.1],
     cameraPos: [0.2, 0.3, 2.4],
     description:
-      'การ์ดประมวลผลกราฟิก หากเสียบสายจอผิดช่อง (เสียบที่บอร์ดแทนการ์ดจอ) หรือการ์ดจอหลวม จอจะไม่ติดแม้เครื่องทำงาน',
+      'การ์ดจอ GeForce RTX 2060 พร้อม Backplate โลหะ หากเสียบสายจอผิดช่อง (เสียบที่บอร์ดแทนการ์ดจอ) หรือการ์ดจอหลวม จอจะไม่ติดแม้เครื่องทำงาน',
     checkSteps: [
       'ตรวจสาย HDMI / DisplayPort ว่าเสียบที่หลังการ์ดจอ (ช่องล่าง) ไม่ใช่ช่องที่เมนบอร์ด (ช่องบน)',
       'ตรวจสายไฟเลี้ยงเสริม PCIe 8-pin ว่าเสียบแน่นหนาและคลิปล็อกเข้าสนิท',
@@ -138,12 +133,12 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     ],
     evidencePrompt: 'ถ่ายภาพพอร์ตหลังเครื่องเพื่อพิสูจน์ว่าเสียบสายจอตรงกับการ์ดจอที่กำลังทำงาน',
     safetyWarning: 'ปิดเครื่องและปลดสายไฟก่อนเสมอ การ์ดจออาจมีความร้อนสะสมสูงหลังจากเปิดใช้งาน',
-    quickQuestion: 'ComCoach ครับ ผมสังเกตว่ามีพอร์ตจอทั้งที่เมนบอร์ดและการ์ดจอ ผมควรเสียบสายที่ช่องไหนครับ?',
+    quickQuestion: 'ComCoach ครับ ผมสังเกตว่ามีพอร์ตจอทั้งที่เมนบอร์ดและการ์ดจอ RTX 2060 ผมควรเสียบสายที่ช่องไหนครับ?',
   },
   {
     id: 'cpu-cooler',
-    nameTh: 'ชุดน้ำระบายความร้อน CPU (AIO Liquid Cooler)',
-    nameEn: 'AIO Liquid Cooler & Radiator',
+    nameTh: 'ชุดน้ำ CPU (DeepCool GamerStorm Castle AIO)',
+    nameEn: 'DeepCool GamerStorm Castle Liquid Cooler & Radiator',
     icon: '❄️',
     stationIds: ['station-3', 'station-4'],
     color: 0x10b981, // Emerald
@@ -152,7 +147,7 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     cameraTarget: [-0.4, 0.65, -0.5],
     cameraPos: [-0.4, 1.0, 1.5],
     description:
-      'บล็อกปั๊มน้ำและหม้อน้ำระบายความร้อน CPU หากปั๊มไม่ทำงาน ท่อตัน หรือซิลิโคนแห้ง เครื่องจะ Overheat อุณหภูมิพุ่งแตะ 100°C แล้วดับเองทันที',
+      'ชุดน้ำปิด DeepCool Castle ปั๊มกระจกเงา RGB และหม้อน้ำ 240mm หากปั๊มไม่ทำงาน ท่อตัน หรือซิลิโคนแห้ง เครื่องจะ Overheat อุณหภูมิพุ่งแตะ 100°C แล้วดับเองทันที',
     checkSteps: [
       'แตะท่อยางเบาๆ เพื่อรู้สึกถึงการไหลเวียนของน้ำหล่อเย็น และฟังเสียงปั๊มน้ำ',
       'ตรวจพัดลมบนหม้อน้ำด้านบนว่าหมุนระบายลมร้อนออกนอกเคสได้ดีหรือไม่',
@@ -161,21 +156,21 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     ],
     evidencePrompt: 'จดบันทึกค่าอุณหภูมิ CPU Temp จากหน้าจอ BIOS เป็นหลักฐานก่อนรื้อฮีทซิงค์',
     safetyWarning: 'ห้ามรื้อชุดระบายความร้อนขณะเครื่องยังร้อน และระวังขาล็อกพัดลมหักเด็ดขาด',
-    quickQuestion: 'ComCoach ครับ เครื่องเปิดได้สักพักแล้วดับเอง พัดลมหม้อน้ำหมุนช้ามาก มีวิธีตรวจเช็คอุณหภูมิอย่างไรครับ?',
+    quickQuestion: 'ComCoach ครับ เครื่องเปิดได้สักพักแล้วดับเอง ปั๊มน้ำ DeepCool หมุนช้ามาก มีวิธีตรวจเช็คอุณหภูมิอย่างไรครับ?',
   },
   {
     id: 'storage',
-    nameTh: 'ฮาร์ดดิสก์ / SSD (M.2 NVMe & SATA)',
-    nameEn: 'Storage (M.2 NVMe & 2.5" SSD)',
+    nameTh: 'ฮาร์ดดิสก์ & SSD (Seagate HDD & M.2 NVMe)',
+    nameEn: 'Seagate Barracuda 3.5" HDD & M.2 NVMe SSD',
     icon: '💽',
     stationIds: ['station-4'],
     color: 0x06b6d4, // Cyan
-    position: [0.1, -0.05, -0.9],
-    size: [0.9, 0.4, 0.3],
-    cameraTarget: [0.1, -0.05, -0.9],
-    cameraPos: [0.6, 0.2, 0.9],
+    position: [1.3, -1.65, 0.4],
+    size: [1.1, 0.4, 1.4],
+    cameraTarget: [1.3, -1.65, 0.4],
+    cameraPos: [1.6, -1.0, 1.8],
     description:
-      'จัดเก็บระบบปฏิบัติการ Windows และข้อมูล หากฮาร์ดดิสก์มี Bad Sector หรือพื้นที่เต็ม จะทำให้เครื่องหน่วง ช้าผิดปกติ Disk 100%',
+      'ฮาร์ดดิสก์ Seagate Barracuda 3.5" และ M.2 NVMe SSD บนเมนบอร์ด หากฮาร์ดดิสก์มี Bad Sector หรือพื้นที่เต็ม จะทำให้เครื่องหน่วง ช้าผิดปกติ Disk 100%',
     checkSteps: [
       'เปิด Task Manager ตรวจดูแท็บ Performance ค่า Disk Active Time ว่าขึ้น 100% ค้างตลอดเวลาหรือไม่',
       'ตรวจพื้นที่ว่างของไดรฟ์ C: ว่าเหลือน้อยกว่า 10-15% หรือไม่',
@@ -183,14 +178,14 @@ export const HARDWARE_PARTS: HardwarePart[] = [
     ],
     evidencePrompt: 'แคปเจอร์ภาพ Task Manager แท็บ Performance Disk 100% แนบให้ ComCoach ตรวจสอบ',
     safetyWarning: 'อย่าเคาะ ขยับ หรือกระทบกระเทือนเคสขณะเครื่องทำงาน โดยเฉพาะอย่างยิ่งหากเป็น HDD จานหมุน',
-    quickQuestion: 'ComCoach ครับ เปิด Task Manager แล้วเห็นช่อง Disk ขึ้น 100% ตลอดเวลาเลย เกิดจากอะไรได้บ้างครับ?',
+    quickQuestion: 'ComCoach ครับ เปิด Task Manager แล้วเห็นช่อง Disk ของฮาร์ดดิสก์ขึ้น 100% ตลอดเวลาเลย เกิดจากอะไรได้บ้างครับ?',
   },
 ]
 
 type LightingMode = 'spectrum' | 'emerald' | 'blue' | 'diagnostics'
 
 export default function PC3DHardwareInspector() {
-  const { state, toggle3DModel, setStation, addMessage } = useChat()
+  const { state, toggle3DModel, addMessage } = useChat()
   const activeStation = STATIONS.find((s) => s.id === state.activeStationId)!
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -213,7 +208,7 @@ export default function PC3DHardwareInspector() {
 
   // Camera animation target refs
   const cameraRef = useRef<THREE.PerspectiveCamera | null>(null)
-  const targetCamPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0.4, 5.2))
+  const targetCamPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0.4, 5.4))
   const targetLookAt = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
   const currentLookAt = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
   const sceneRef = useRef<THREE.Scene | null>(null)
@@ -263,8 +258,8 @@ export default function PC3DHardwareInspector() {
         targetLookAt.current.set(0, -0.4, 0.2)
         break
       case 'rear':
-        targetCamPos.current.set(-3.2, 0.0, 1.8)
-        targetLookAt.current.set(-1.8, 0, 0)
+        targetCamPos.current.set(-3.4, -0.4, 1.8)
+        targetLookAt.current.set(-1.8, -0.8, 0)
         break
     }
   }
@@ -276,7 +271,7 @@ export default function PC3DHardwareInspector() {
     }
   }, [showGlass])
 
-  // ─── Three.js Scene Setup ──────────────────────────────────────────────────
+  // ─── Three.js Scene Setup with Custom Gaming PC Textures ───────────────────
   useEffect(() => {
     if (!state.model3DOpen || !canvasRef.current) return
 
@@ -305,28 +300,28 @@ export default function PC3DHardwareInspector() {
     renderer.shadowMap.enabled = true
     renderer.shadowMap.type = THREE.PCFSoftShadowMap
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.15
+    renderer.toneMappingExposure = 1.2
 
     // 3. Lighting System
-    const ambientLight = new THREE.AmbientLight(0x1e293b, 1.6)
+    const ambientLight = new THREE.AmbientLight(0x334155, 1.8)
     scene.add(ambientLight)
 
-    const keyLight = new THREE.DirectionalLight(0xe0f2fe, 2.2)
+    const keyLight = new THREE.DirectionalLight(0xf8fafc, 2.5)
     keyLight.position.set(5, 7, 6)
     keyLight.castShadow = true
     scene.add(keyLight)
 
-    const fillLight = new THREE.DirectionalLight(0x0f766e, 1.2)
+    const fillLight = new THREE.DirectionalLight(0x0284c7, 1.4)
     fillLight.position.set(-6, -2, -4)
     scene.add(fillLight)
 
     // Internal ARGB Point Lights
-    const internalLight = new THREE.PointLight(0x38bdf8, 2.8, 7)
+    const internalLight = new THREE.PointLight(0x38bdf8, 3.2, 7)
     internalLight.position.set(0, 0.8, 0.2)
     scene.add(internalLight)
     pointLightInternalRef.current = internalLight
 
-    const subInternalLight = new THREE.PointLight(0xa855f7, 2.0, 6)
+    const subInternalLight = new THREE.PointLight(0xa855f7, 2.2, 6)
     subInternalLight.position.set(0.5, -0.6, 0.4)
     scene.add(subInternalLight)
     pointLightSubRef.current = subInternalLight
@@ -345,6 +340,36 @@ export default function PC3DHardwareInspector() {
     const rgbList: { mesh: THREE.Mesh; baseHue: number }[] = []
     const partsMap = new Map<string, THREE.Mesh>()
 
+    // ── Load Custom Gaming PC Textures ──
+    const textureLoader = new THREE.TextureLoader()
+
+    const moboTexture = textureLoader.load('/custom-gaming-pc/textures/ROG_maximus_xiii.jpeg')
+    moboTexture.colorSpace = THREE.SRGBColorSpace
+
+    const gpuBackplateTexture = textureLoader.load('/custom-gaming-pc/textures/Backsidertx2060.jpeg')
+    gpuBackplateTexture.colorSpace = THREE.SRGBColorSpace
+
+    const psuSideTexture = textureLoader.load('/custom-gaming-pc/textures/corsairpsuside.jpeg')
+    psuSideTexture.colorSpace = THREE.SRGBColorSpace
+
+    const psuBackTexture = textureLoader.load('/custom-gaming-pc/textures/corsair-cx750m-back.jpeg')
+    psuBackTexture.colorSpace = THREE.SRGBColorSpace
+
+    const ramTexture = textureLoader.load('/custom-gaming-pc/textures/gskilltridentzrgb.jpeg')
+    ramTexture.colorSpace = THREE.SRGBColorSpace
+
+    const aioTexture = textureLoader.load('/custom-gaming-pc/textures/deepcoolaio.png')
+    aioTexture.colorSpace = THREE.SRGBColorSpace
+
+    const hddTexture = textureLoader.load('/custom-gaming-pc/textures/hdd.jpeg')
+    hddTexture.colorSpace = THREE.SRGBColorSpace
+
+    const fanTexture = textureLoader.load('/custom-gaming-pc/textures/casefan.png')
+    fanTexture.colorSpace = THREE.SRGBColorSpace
+
+    const rgbGradientTexture = textureLoader.load('/custom-gaming-pc/textures/RGB_TEXTURE.png')
+    rgbGradientTexture.colorSpace = THREE.SRGBColorSpace
+
     // Common Materials
     const chassisMat = new THREE.MeshStandardMaterial({
       color: 0x0f172a,
@@ -359,30 +384,18 @@ export default function PC3DHardwareInspector() {
     })
 
     const aluminumMat = new THREE.MeshStandardMaterial({
-      color: 0x64748b,
+      color: 0x94a3b8,
       roughness: 0.3,
-      metalness: 0.8,
-    })
-
-    const copperMat = new THREE.MeshStandardMaterial({
-      color: 0xb45309,
-      roughness: 0.4,
-      metalness: 0.9,
-    })
-
-    const moboPCBMat = new THREE.MeshStandardMaterial({
-      color: 0x064e3b, // Dark cyber forest
-      roughness: 0.4,
-      metalness: 0.3,
+      metalness: 0.85,
     })
 
     const glassMat = new THREE.MeshPhysicalMaterial({
       color: 0x93c5fd,
       transparent: true,
-      opacity: 0.2,
+      opacity: 0.22,
       roughness: 0.05,
-      metalness: 0.1,
-      transmission: 0.85,
+      metalness: 0.15,
+      transmission: 0.82,
       ior: 1.5,
     })
 
@@ -392,7 +405,7 @@ export default function PC3DHardwareInspector() {
     backPanel.position.set(0, 0, -1.18)
     pcGroup.add(backPanel)
 
-    // Top Ceiling with Fan Grill
+    // Top Ceiling with Fan Radiator Mount
     const topPanel = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.08, 2.4), chassisMat)
     topPanel.position.set(0, 2.2, 0)
     pcGroup.add(topPanel)
@@ -430,7 +443,7 @@ export default function PC3DHardwareInspector() {
     frontBezel.position.set(2.1, 0, 0)
     pcGroup.add(frontBezel)
 
-    // Rear Frame with I/O Cutout
+    // Rear Frame with I/O Cutout & PSU Cutout
     const rearFrame = new THREE.Mesh(new THREE.BoxGeometry(0.1, 4.4, 2.4), chassisMat)
     rearFrame.position.set(-2.1, 0, 0)
     pcGroup.add(rearFrame)
@@ -440,13 +453,17 @@ export default function PC3DHardwareInspector() {
     psuShroud.position.set(0, -1.74, 0)
     pcGroup.add(psuShroud)
 
-    // PSU Shroud Cutout Window (shows PSU label & brand)
-    const shroudWindow = new THREE.Mesh(
-      new THREE.BoxGeometry(1.6, 0.5, 0.02),
-      new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.8 })
+    // PSU Shroud Cutout Window (shows Corsair CX750M side badge!)
+    const psuSidePlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.6, 0.65),
+      new THREE.MeshStandardMaterial({
+        map: psuSideTexture,
+        roughness: 0.35,
+        metalness: 0.4,
+      })
     )
-    shroudWindow.position.set(-1.2, -1.68, 1.18)
-    pcGroup.add(shroudWindow)
+    psuSidePlane.position.set(-1.18, -1.68, 1.18)
+    pcGroup.add(psuSidePlane)
 
     // Tempered Glass Side Panel (Removable via state toggle)
     const glassPanel = new THREE.Mesh(new THREE.BoxGeometry(4.16, 4.36, 0.04), glassMat)
@@ -454,48 +471,27 @@ export default function PC3DHardwareInspector() {
     glassPanelRef.current = glassPanel
     pcGroup.add(glassPanel)
 
-    // ── 4.2 Motherboard (High-End ATX Dark Edition) ────────────────────────
-    const mobo = new THREE.Mesh(new THREE.BoxGeometry(3.1, 3.2, 0.08), moboPCBMat)
-    mobo.position.set(-0.15, 0.15, -1.08)
+    // ── 4.2 Motherboard (ASUS ROG MAXIMUS XIII HERO) ────────────────────────
+    // High-res Motherboard texture mapped onto the ATX form factor plane
+    const moboGeom = new THREE.PlaneGeometry(2.8, 3.44)
+    const moboMat = new THREE.MeshStandardMaterial({
+      map: moboTexture,
+      roughness: 0.3,
+      metalness: 0.45,
+    })
+    const mobo = new THREE.Mesh(moboGeom, moboMat)
+    mobo.position.set(-0.15, 0.15, -1.06)
     pcGroup.add(mobo)
 
-    // VRM Heatsinks (Brushed gunmetal blocks around CPU socket)
-    const vrmTop = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.35, 0.25), darkMetalMat)
-    vrmTop.position.set(-0.4, 1.4, -0.92)
-    pcGroup.add(vrmTop)
-
-    const vrmLeft = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.2, 0.25), darkMetalMat)
-    vrmLeft.position.set(-1.15, 0.7, -0.92)
-    pcGroup.add(vrmLeft)
-
-    // Rear I/O Armor Shroud with glowing RGB line
-    const ioShroud = new THREE.Mesh(new THREE.BoxGeometry(0.4, 2.2, 0.35), darkMetalMat)
-    ioShroud.position.set(-1.55, 0.4, -0.88)
-    pcGroup.add(ioShroud)
-
-    const ioAccentRgb = new THREE.Mesh(
-      new THREE.BoxGeometry(0.04, 1.8, 0.04),
-      new THREE.MeshStandardMaterial({ emissive: 0x38bdf8, emissiveIntensity: 1.2 })
+    // Motherboard Backing Plate
+    const moboBacking = new THREE.Mesh(
+      new THREE.BoxGeometry(2.84, 3.48, 0.06),
+      new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.8 })
     )
-    ioAccentRgb.position.set(-1.38, 0.4, -0.7)
-    pcGroup.add(ioAccentRgb)
-    rgbList.push({ mesh: ioAccentRgb, baseHue: 0.55 })
+    moboBacking.position.set(-0.15, 0.15, -1.1)
+    pcGroup.add(moboBacking)
 
-    // Chipset PCH Heatsink (Lower right of mobo)
-    const chipsetHeatsink = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.18), darkMetalMat)
-    chipsetHeatsink.position.set(0.9, -0.9, -0.96)
-    pcGroup.add(chipsetHeatsink)
-
-    // Solid Capacitors array
-    const capGeom = new THREE.CylinderGeometry(0.05, 0.05, 0.14, 12)
-    const capMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9 })
-    for (let i = 0; i < 6; i++) {
-      const cap = new THREE.Mesh(capGeom, capMat)
-      cap.position.set(-0.85 + (i % 3) * 0.15, 1.15 - Math.floor(i / 3) * 0.18, -0.95)
-      pcGroup.add(cap)
-    }
-
-    // Steel-Reinforced PCIe x16 Slot
+    // Steel-Reinforced PCIe x16 Slot with 3D Depth
     const pcieSteel = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.12, 0.15), aluminumMat)
     pcieSteel.position.set(-0.15, -0.38, -0.98)
     pcGroup.add(pcieSteel)
@@ -508,7 +504,6 @@ export default function PC3DHardwareInspector() {
     }
 
     // ── 4.3 Case Fans (Rear Exhaust & Front Dual Intakes) ──────────────────
-    // Helper to create detailed 120mm RGB Fan
     const createRgbFan = (radius: number, depth: number, color: number) => {
       const fanGroup = new THREE.Group()
 
@@ -529,7 +524,7 @@ export default function PC3DHardwareInspector() {
       fanGroup.add(ringMesh)
       rgbList.push({ mesh: ringMesh, baseHue: 0.6 })
 
-      // Rotating Blades Hub
+      // Rotating Blades Hub with Fan Texture
       const bladeHub = new THREE.Mesh(
         new THREE.CylinderGeometry(radius * 0.32, radius * 0.32, depth * 0.8, 16),
         new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.8 })
@@ -540,7 +535,7 @@ export default function PC3DHardwareInspector() {
       const bladeGeom = new THREE.BoxGeometry(radius * 0.65, 0.03, depth * 0.6)
       const bladeMat = new THREE.MeshPhysicalMaterial({
         color: 0xffffff,
-        transmission: 0.6,
+        transmission: 0.65,
         roughness: 0.1,
       })
       for (let b = 0; b < 7; b++) {
@@ -593,9 +588,7 @@ export default function PC3DHardwareInspector() {
       pcGroup.add(partHitMesh)
       partsMap.set(part.id, partHitMesh)
 
-      // Specialized high-detail 3D geometry for each component:
-
-      // ── A. POWER SUPPLY (PSU) ──
+      // ── A. POWER SUPPLY (CORSAIR CX750M) ──
       if (part.id === 'psu') {
         const psuBox = new THREE.Mesh(
           new THREE.BoxGeometry(1.6, 0.85, 1.4),
@@ -603,27 +596,20 @@ export default function PC3DHardwareInspector() {
         )
         partHitMesh.add(psuBox)
 
-        // Rear AC socket & rocker switch
-        const acSocket = new THREE.Mesh(
-          new THREE.BoxGeometry(0.04, 0.28, 0.35),
-          new THREE.MeshStandardMaterial({ color: 0x1e293b })
-        )
-        acSocket.position.set(-0.81, 0.1, -0.3)
-        partHitMesh.add(acSocket)
-
-        const psuSwitch = new THREE.Mesh(
-          new THREE.BoxGeometry(0.06, 0.18, 0.14),
+        // Rear face with actual Corsair CX750M back panel texture (AC socket + switch + grill)
+        const psuRearPlane = new THREE.Mesh(
+          new THREE.PlaneGeometry(1.35, 0.8),
           new THREE.MeshStandardMaterial({
-            color: 0xef4444,
-            emissive: 0xef4444,
-            emissiveIntensity: 1.5,
+            map: psuBackTexture,
+            roughness: 0.4,
+            metalness: 0.8,
           })
         )
-        psuSwitch.position.set(-0.81, 0.1, 0.2)
-        partHitMesh.add(psuSwitch)
-        rgbList.push({ mesh: psuSwitch, baseHue: 0.0 })
+        psuRearPlane.position.set(-0.81, 0, 0)
+        psuRearPlane.rotation.y = -Math.PI / 2
+        partHitMesh.add(psuRearPlane)
 
-        // Braided Main Cable Loom
+        // Braided Main Cable Loom coming out towards front
         const cableLoom = new THREE.Mesh(
           new THREE.CylinderGeometry(0.14, 0.14, 0.9, 12),
           new THREE.MeshStandardMaterial({ color: 0x020617, roughness: 0.8 })
@@ -645,13 +631,13 @@ export default function PC3DHardwareInspector() {
         for (let p = 0; p < 8; p++) {
           const pin = new THREE.Mesh(
             new THREE.CylinderGeometry(0.015, 0.015, 0.12, 8),
-            new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.9 })
+            new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.95 })
           )
           pin.position.set(-0.14 + (p % 4) * 0.09, 0.12, -0.04 + Math.floor(p / 4) * 0.08)
           partHitMesh.add(pin)
         }
 
-        // Twisted colored front panel wires (Red/White/Black)
+        // Twisted colored front panel wires (Power SW / Reset / Power LED)
         const wire1 = new THREE.Mesh(
           new THREE.CylinderGeometry(0.02, 0.02, 0.45, 8),
           new THREE.MeshStandardMaterial({ color: 0xef4444 })
@@ -661,26 +647,34 @@ export default function PC3DHardwareInspector() {
         partHitMesh.add(wire1)
       }
 
-      // ── C. RAM (DUAL-CHANNEL DDR5 ARGB MODULES) ──
+      // ── C. RAM (G.SKILL TRIDENT Z RGB) ──
       if (part.id === 'ram') {
         for (let s = 0; s < 2; s++) {
-          const xOff = (s - 0.5) * 0.25
+          const xOff = (s - 0.5) * 0.22
 
-          // Black metallic heatspreader
-          const ramBody = new THREE.Mesh(
-            new THREE.BoxGeometry(0.08, 1.25, 0.8),
-            new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.25, metalness: 0.85 })
+          // RAM Stick with G.Skill Trident Z RGB Texture
+          const ramSidePlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.8, 1.25),
+            new THREE.MeshStandardMaterial({
+              map: ramTexture,
+              roughness: 0.3,
+              metalness: 0.7,
+            })
           )
-          ramBody.position.set(xOff, 0, 0)
-          partHitMesh.add(ramBody)
+          ramSidePlane.position.set(xOff, 0, 0.05)
+          partHitMesh.add(ramSidePlane)
 
-          // Silver accent badge
-          const ramBadge = new THREE.Mesh(
-            new THREE.BoxGeometry(0.09, 0.4, 0.6),
-            aluminumMat
+          const ramBackPlane = new THREE.Mesh(
+            new THREE.PlaneGeometry(0.8, 1.25),
+            new THREE.MeshStandardMaterial({
+              map: ramTexture,
+              roughness: 0.3,
+              metalness: 0.7,
+            })
           )
-          ramBadge.position.set(xOff, -0.1, 0)
-          partHitMesh.add(ramBadge)
+          ramBackPlane.position.set(xOff, 0, -0.05)
+          ramBackPlane.rotation.y = Math.PI
+          partHitMesh.add(ramBackPlane)
 
           // Glowing ARGB Top Lightbar
           const ramLightbar = new THREE.Mesh(
@@ -698,9 +692,9 @@ export default function PC3DHardwareInspector() {
         }
       }
 
-      // ── D. TRIPLE-FAN GRAPHICS CARD (GPU) ──
+      // ── D. GRAPHICS CARD (NVIDIA GEFORCE RTX 2060) ──
       if (part.id === 'gpu') {
-        // Main Shroud
+        // Main GPU Shroud
         const gpuShroud = new THREE.Mesh(
           new THREE.BoxGeometry(2.4, 0.55, 0.95),
           new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.3, metalness: 0.85 })
@@ -715,12 +709,17 @@ export default function PC3DHardwareInspector() {
         finStack.position.set(0, 0, -0.04)
         partHitMesh.add(finStack)
 
-        // Metal Backplate on Top
+        // Real NVIDIA RTX 2060 Backplate Texture on Top Face
         const backplate = new THREE.Mesh(
-          new THREE.BoxGeometry(2.38, 0.04, 0.94),
-          new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.9 })
+          new THREE.PlaneGeometry(2.38, 0.92),
+          new THREE.MeshStandardMaterial({
+            map: gpuBackplateTexture,
+            roughness: 0.35,
+            metalness: 0.8,
+          })
         )
         backplate.position.set(0, 0.28, 0)
+        backplate.rotation.x = -Math.PI / 2
         partHitMesh.add(backplate)
 
         // Triple GPU Fans
@@ -770,31 +769,33 @@ export default function PC3DHardwareInspector() {
         partHitMesh.add(pcieCables)
       }
 
-      // ── E. AIO CPU LIQUID COOLER & RADIATOR ──
+      // ── E. AIO CPU LIQUID COOLER (DEEPCOOL GAMERSTORM CASTLE) ──
       if (part.id === 'cpu-cooler') {
         // Cylindrical CPU Pump Block
         const pumpBlock = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.42, 0.42, 0.35, 24),
+          new THREE.CylinderGeometry(0.44, 0.44, 0.35, 24),
           new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.85, roughness: 0.2 })
         )
         pumpBlock.rotation.x = Math.PI / 2
         pumpBlock.position.set(0, 0, 0.1)
         partHitMesh.add(pumpBlock)
 
-        // Glowing RGB Infinity Ring on Pump Face
-        const pumpRing = new THREE.Mesh(
-          new THREE.TorusGeometry(0.32, 0.04, 16, 32),
+        // Pump Face with DeepCool GamerStorm Infinity Mirror Texture
+        const pumpFace = new THREE.Mesh(
+          new THREE.CircleGeometry(0.38, 32),
           new THREE.MeshStandardMaterial({
-            color: 0x10b981,
+            map: aioTexture,
             emissive: 0x10b981,
-            emissiveIntensity: 1.8,
+            emissiveIntensity: 0.8,
+            roughness: 0.1,
+            metalness: 0.3,
           })
         )
-        pumpRing.position.set(0, 0, 0.28)
-        partHitMesh.add(pumpRing)
-        rgbList.push({ mesh: pumpRing, baseHue: 0.38 })
+        pumpFace.position.set(0, 0, 0.28)
+        partHitMesh.add(pumpFace)
+        rgbList.push({ mesh: pumpFace, baseHue: 0.38 })
 
-        // Dual Sleeved Coolant Tubes connecting pump block to top ceiling
+        // Dual Sleeved Coolant Tubes connecting pump block to top radiator
         const tubeGeom = new THREE.CylinderGeometry(0.06, 0.06, 1.4, 16)
         const tubeMat = new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.7 })
 
@@ -809,41 +810,38 @@ export default function PC3DHardwareInspector() {
         partHitMesh.add(tube2)
       }
 
-      // ── F. STORAGE (M.2 NVME & 2.5" SSD) ──
+      // ── F. STORAGE (SEAGATE BARRACUDA 3.5" HDD & M.2 NVME) ──
       if (part.id === 'storage') {
-        // M.2 NVMe SSD Module
-        const m2Pcb = new THREE.Mesh(
-          new THREE.BoxGeometry(0.8, 0.24, 0.04),
-          new THREE.MeshStandardMaterial({ color: 0x047857 })
+        // 3.5" Desktop Hard Drive in Drive Bay
+        const hddBody = new THREE.Mesh(
+          new THREE.BoxGeometry(1.0, 0.28, 1.4),
+          new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.85, roughness: 0.3 })
         )
-        partHitMesh.add(m2Pcb)
+        partHitMesh.add(hddBody)
 
-        // Aluminum M.2 Heatsink Armor
-        const m2Heatsink = new THREE.Mesh(
-          new THREE.BoxGeometry(0.78, 0.22, 0.06),
-          new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 })
+        // Top Face with Authentic Seagate Barracuda HDD Label Texture
+        const hddLabel = new THREE.Mesh(
+          new THREE.PlaneGeometry(0.95, 1.35),
+          new THREE.MeshStandardMaterial({
+            map: hddTexture,
+            roughness: 0.4,
+            metalness: 0.2,
+          })
         )
-        m2Heatsink.position.set(0, 0, 0.04)
-        partHitMesh.add(m2Heatsink)
+        hddLabel.position.set(0, 0.145, 0)
+        hddLabel.rotation.x = -Math.PI / 2
+        partHitMesh.add(hddLabel)
 
-        // Gold Contact Pins
-        const m2Gold = new THREE.Mesh(
-          new THREE.BoxGeometry(0.12, 0.18, 0.02),
-          new THREE.MeshStandardMaterial({ color: 0xfbbf24, metalness: 0.95 })
-        )
-        m2Gold.position.set(-0.42, 0, 0.01)
-        partHitMesh.add(m2Gold)
-
-        // Status Activity LED
+        // Activity LED Indicator
         const storageLed = new THREE.Mesh(
-          new THREE.BoxGeometry(0.03, 0.03, 0.02),
+          new THREE.BoxGeometry(0.03, 0.03, 0.03),
           new THREE.MeshStandardMaterial({
             color: 0x06b6d4,
             emissive: 0x06b6d4,
-            emissiveIntensity: 2.0,
+            emissiveIntensity: 2.2,
           })
         )
-        storageLed.position.set(0.32, 0.08, 0.06)
+        storageLed.position.set(0.42, 0.15, -0.6)
         partHitMesh.add(storageLed)
         rgbList.push({ mesh: storageLed, baseHue: 0.52 })
       }
@@ -1000,7 +998,7 @@ export default function PC3DHardwareInspector() {
 
     // ── 6. Dynamic Animation Loop (Fans & ARGB Engine) ────────────────────────
     let animId: number
-    let clock = new THREE.Clock()
+    const clock = new THREE.Clock()
 
     const animate = () => {
       animId = requestAnimationFrame(animate)
@@ -1016,7 +1014,7 @@ export default function PC3DHardwareInspector() {
         const mat = mesh.material as THREE.MeshStandardMaterial
         if (!mat || !mat.emissive) return
 
-        let targetColor = new THREE.Color()
+        const targetColor = new THREE.Color()
 
         if (lightingMode === 'spectrum') {
           // Flowing rainbow wave
@@ -1130,7 +1128,7 @@ export default function PC3DHardwareInspector() {
                 <h2 className="text-xs sm:text-base font-bold text-white truncate flex items-center gap-1.5">
                   <span>โมเดล 3D จำลองคอมพิวเตอร์</span>
                   <span className="hidden sm:inline text-xs font-normal text-slate-400">
-                    (Gaming Rig & Hardware Inspector)
+                    (Custom Gaming PC - ROG & RTX Edition)
                   </span>
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm">
@@ -1138,7 +1136,7 @@ export default function PC3DHardwareInspector() {
                 </span>
               </div>
               <p className="text-[11px] sm:text-xs text-slate-400 truncate">
-                หมุนดูภายในเคส ปรับแสง RGB ถอดฝากระจก หรือแตะชิ้นส่วนเพื่อซูมตรวจสอบ
+                ใช้ภาพพื้นผิวจริงจาก ASUS ROG, RTX 2060, Corsair PSU, Trident Z RAM และ DeepCool AIO
               </p>
             </div>
           </div>
@@ -1168,7 +1166,7 @@ export default function PC3DHardwareInspector() {
           <div className="flex items-center gap-2 text-slate-400 text-[10px] sm:text-[11px]">
             <Sparkles size={12} className="text-amber-400 flex-shrink-0 animate-pulse" />
             <span className="truncate">
-              ชิ้นส่วนต้องสงสัยของฐานนี้จะเรืองแสงเด่นชัด | คลิกที่ชิ้นส่วนเพื่อวินิจฉัย
+              ชิ้นส่วนต้องสงสัยของฐานนี้จะเรืองแสงเด่นชัด | คลิกที่ชิ้นส่วนเพื่อซูมและวินิจฉัย
             </span>
           </div>
         </div>
@@ -1212,14 +1210,14 @@ export default function PC3DHardwareInspector() {
                 <button
                   onClick={() => setCameraPreset('gpu')}
                   className="px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
-                  title="โฟกัสการ์ดจอ"
+                  title="โฟกัสการ์ดจอ RTX 2060"
                 >
                   การ์ดจอ
                 </button>
                 <button
                   onClick={() => setCameraPreset('rear')}
                   className="px-2 py-1 rounded-lg text-[10px] sm:text-[11px] font-medium text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
-                  title="หลังเคส & พอร์ตเชื่อมต่อ"
+                  title="หลังเคส & พอร์ตเชื่อมต่อ Corsair PSU"
                 >
                   หลังเคส
                 </button>
