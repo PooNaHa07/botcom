@@ -371,33 +371,42 @@ export default function ChatInterface() {
               </div>
               <div
                 className={cn(
-                  'w-full max-w-sm p-3.5 sm:p-4 rounded-xl border text-xs sm:text-sm text-slate-300 leading-relaxed text-left',
+                  'w-full max-w-md p-4 sm:p-5 rounded-2xl border text-xs sm:text-sm text-slate-300 leading-relaxed text-left shadow-xl',
                   activeStation.bgColor,
                   activeStation.borderColor
                 )}
               >
-                <p className="font-semibold text-white mb-1">🎯 วัตถุประสงค์ประจำฐาน</p>
-                <p className="text-slate-200">{activeStation.objective}</p>
-                <div className="mt-3 pt-3 border-t border-white/10 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center justify-between">
-                  <span className="text-[11px] text-slate-400">
-                    📍 {activeStation.zone}
-                  </span>
-                  <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                <p className="font-semibold text-white mb-1.5 flex items-center gap-1.5 text-sm sm:text-base">
+                  <span>🎯</span>
+                  <span>วัตถุประสงค์ประจำฐาน</span>
+                </p>
+                <p className="text-slate-200 leading-relaxed">{activeStation.objective}</p>
+
+                <div className="mt-4 pt-3 border-t border-white/10 flex flex-col gap-2.5">
+                  <div className="flex items-center gap-1.5 text-xs text-slate-300">
+                    <MapPin size={13} className="text-emerald-400 flex-shrink-0" />
+                    <span className="font-medium text-slate-400">พิกัดในแล็บ:</span>
+                    <span className="text-white font-medium">{activeStation.zone}</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 w-full">
                     <button
                       id="welcome-3d-model-btn"
                       onClick={() => toggle3DModel(true)}
-                      className="flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 transition-colors flex items-center justify-center gap-1"
+                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-sm truncate"
+                      title="สำรวจเคส 3D"
                     >
-                      <Box size={13} />
-                      <span>สำรวจเคส 3D</span>
+                      <Box size={14} className="flex-shrink-0 text-sky-400" />
+                      <span className="truncate">สำรวจเคส 3D</span>
                     </button>
                     <button
                       id="welcome-navigate-btn"
                       onClick={() => toggleNavigator(true)}
-                      className="flex-1 sm:flex-none px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 transition-colors flex items-center justify-center gap-1"
+                      className="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 transition-all flex items-center justify-center gap-1.5 active:scale-95 shadow-sm truncate"
+                      title="นำทางไปโต๊ะนี้"
                     >
-                      <MapPin size={13} />
-                      <span>นำทางไปโต๊ะนี้</span>
+                      <MapPin size={14} className="flex-shrink-0 text-emerald-400" />
+                      <span className="truncate">นำทางไปโต๊ะนี้</span>
                     </button>
                   </div>
                 </div>
