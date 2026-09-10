@@ -17,6 +17,8 @@ import {
   MicOff,
   RotateCcw,
   Download,
+  FileText,
+  Save,
 } from 'lucide-react'
 import { useChat } from '@/context/ChatContext'
 import { STATIONS, QUICK_PROMPTS } from '@/lib/stations'
@@ -70,6 +72,7 @@ export default function ChatInterface() {
     setLoading,
     toggleNavigator,
     toggle3DModel,
+    toggleActivitySheet,
     resetChat,
     autoCompleteMissionStep,
     showNameModal,
@@ -437,6 +440,28 @@ export default function ChatInterface() {
               className="text-red-500/60 hover:text-red-400 transition-colors p-1"
             >
               <X size={13} />
+            </button>
+          </div>
+        )}
+
+        {/* ── Quick Worksheet Save Banner if conversation is active ── */}
+        {state.messages.length >= 2 && (
+          <div className="mx-2.5 sm:mx-4 mb-2 p-2 sm:p-2.5 rounded-xl bg-slate-900/90 border border-emerald-500/30 flex items-center justify-between gap-2 animate-fade-in flex-shrink-0 shadow-lg">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+                <FileText size={13} />
+              </div>
+              <p className="text-xs text-slate-300 truncate">
+                สืบค้นฐานที่ {activeStation.number} ได้ข้อสรุปแล้ว? บันทึกลงใบกิจกรรม
+              </p>
+            </div>
+            <button
+              id="open-worksheet-from-chat-btn"
+              onClick={() => toggleActivitySheet(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md transition-all flex-shrink-0 active:scale-95 focus-ring"
+            >
+              <Save size={13} />
+              <span>เปิดใบกิจกรรมเพื่อบันทึก</span>
             </button>
           </div>
         )}

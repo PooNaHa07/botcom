@@ -4,7 +4,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   FileText,
   X,
@@ -18,6 +18,8 @@ import {
   User,
   Hash,
   Users,
+  ArrowRight,
+  Clock,
 } from 'lucide-react'
 import { useChat } from '@/context/ChatContext'
 import { STATIONS, SAFETY_RULES } from '@/lib/stations'
@@ -28,6 +30,13 @@ export default function ActivitySheetModal() {
   const [selectedStationId, setSelectedStationId] = useState(state.activeStationId)
   const [saveToast, setSaveToast] = useState(false)
   const [autoFillToast, setAutoFillToast] = useState(false)
+
+  // Keep selectedStationId in sync with activeStationId when modal opens
+  useEffect(() => {
+    if (state.activitySheetOpen && state.activeStationId) {
+      setSelectedStationId(state.activeStationId)
+    }
+  }, [state.activitySheetOpen, state.activeStationId])
 
   if (!state.activitySheetOpen) return null
 
@@ -52,13 +61,38 @@ export default function ActivitySheetModal() {
   }
 
   const handleSave = () => {
+    updateWorksheet(station.id, { lastUpdated: Date.now() })
     setSaveToast(true)
-    setTimeout(() => setSaveToast(false), 2000)
+    setTimeout(() => setSaveToast(false), 2500)
+  }
+
+  const currentIndex = STATIONS.findIndex((s) => s.id === selectedStationId)
+  const nextStation = currentIndex >= 0 && currentIndex < STATIONS.length - 1 ? STATIONS[currentIndex + 1] : null
+
+  const handleSaveAndNext = () => {
+    handleSave()
+    if (nextStation) {
+      setSelectedStationId(nextStation.id)
+      const container = document.getElementById('activity-sheet-scroll-body')
+      if (container) container.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   const handlePrint = () => {
     window.print()
   }
+
+  // Count filled steps for current station (out of 6)
+  const filledStepsCount = [
+    currentData.observation,
+    currentData.problemStatement,
+    currentData.hypotheses,
+    currentData.inspectionPlan,
+    currentData.actionAndEvidence,
+    currentData.verificationMethod,
+  ].filter((val) => typeof val === 'string' && val.trim().length > 0).length
+
+  const isStationComplete = filledStepsCount === 6
 
   // Count how many stations have filled data
   const filledCount = STATIONS.filter((s) => {
@@ -147,7 +181,7 @@ export default function ActivitySheetModal() {
         </div>
 
         {/* ── Content Body (Scrollable on screen) ── */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
+        <div id="activity-sheet-scroll-body" className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
           {/* Student Info Bar (Screen) */}
           <div className="p-3 sm:p-4 rounded-xl bg-slate-850/80 border border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 print:hidden">
             <div>
@@ -199,7 +233,18 @@ export default function ActivitySheetModal() {
             {STATIONS.map((s) => {
               const isSelected = s.id === selectedStationId
               const data = state.worksheetData[s.id]
-              const hasData = data && (data.observation || data.hypotheses || data.actionAndEvidence)
+              const stationFilledCount = data
+                ? [
+                    data.observation,
+                    data.problemStatement,
+                    data.hypotheses,
+                    data.inspectionPlan,
+                    data.actionAndEvidence,
+                    data.verificationMethod,
+                  ].filter((v) => typeof v === 'string' && v.trim().length > 0).length
+                : 0
+              const hasData = stationFilledCount > 0
+              const isAllDone = stationFilledCount === 6
               return (
                 <button
                   key={s.id}
@@ -214,11 +259,24 @@ export default function ActivitySheetModal() {
                 >
                   <span className="text-base">{s.icon}</span>
                   <div className="text-left">
-                    <p className="font-semibold leading-tight">ฐานที่ {s.number}</p>
+                    <p className="font-semibold leading-tight flex items-center gap-1.5">
+                      <span>ฐานที่ {s.number}</span>
+                      {isAllDone && (
+                        <span className="text-[9px] px-1.5 py-0.5 bg-emerald-500/30 text-emerald-300 rounded font-normal">
+                          ครบ 6 ขั้น
+                        </span>
+                      )}
+                    </p>
                     <p className="text-[10px] text-slate-500 truncate max-w-[120px]">{s.titleTh}</p>
                   </div>
                   {hasData && (
-                    <CheckCircle2 size={13} className="text-emerald-400 flex-shrink-0 ml-1" />
+                    <CheckCircle2
+                      size={14}
+                      className={cn(
+                        'flex-shrink-0 ml-1',
+                        isAllDone ? 'text-emerald-400' : 'text-emerald-400/60'
+                      )}
+                    />
                   )}
                 </button>
               )
@@ -450,6 +508,79 @@ export default function ActivitySheetModal() {
             </div>
           </div>
 
+          {/* ── Save & Station Completion Action Card (Prominent at the end of 6 steps) ── */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-emerald-500/40 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <div
+                className={cn(
+                  'w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0 border shadow-inner',
+                  isStationComplete
+                    ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                    : 'bg-amber-500/20 border-amber-500/40 text-amber-400'
+                )}
+              >
+                {isStationComplete ? <CheckCircle2 size={24} /> : <Save size={22} />}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h4 className="text-sm sm:text-base font-bold text-white">
+                    บันทึกผลการปฏิบัติการ ฐานที่ {station.number}
+                  </h4>
+                  <span
+                    className={cn(
+                      'text-[11px] px-2.5 py-0.5 rounded-full font-medium border',
+                      isStationComplete
+                        ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300'
+                        : 'bg-white/10 border-white/10 text-slate-300'
+                    )}
+                  >
+                    กรอกแล้ว {filledStepsCount}/6 ขั้นตอน
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  {currentData.lastUpdated
+                    ? `บันทึกล่าสุดเมื่อ ${new Date(currentData.lastUpdated).toLocaleTimeString('th-TH', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                      })} น.`
+                    : 'กดปุ่มเพื่อยืนยันการบันทึกข้อมูลฐานนี้ลงในเครื่อง'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2.5 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+              <button
+                id={`save-station-${station.number}-btn`}
+                onClick={handleSave}
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20 active:scale-95 transition-all focus-ring"
+              >
+                <Save size={16} />
+                <span>บันทึกข้อมูลฐานที่ {station.number}</span>
+              </button>
+
+              {nextStation ? (
+                <button
+                  id={`save-and-next-station-${station.number}-btn`}
+                  onClick={handleSaveAndNext}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 hover:border-emerald-500/60 shadow-md active:scale-95 transition-all focus-ring"
+                >
+                  <span>ไปฐานที่ {nextStation.number}</span>
+                  <ArrowRight size={16} />
+                </button>
+              ) : (
+                <button
+                  id="finish-all-stations-btn"
+                  onClick={handlePrint}
+                  className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 text-slate-950 shadow-lg active:scale-95 transition-all focus-ring"
+                >
+                  <Printer size={16} />
+                  <span>พิมพ์ใบงานส่งครู (PDF)</span>
+                </button>
+              )}
+            </div>
+          </div>
+
           {/* 3.2 Safety Rules Checklist (from PDF) */}
           <div className="p-4 rounded-xl bg-amber-950/20 border border-amber-500/20 space-y-2">
             <h5 className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
@@ -492,26 +623,34 @@ export default function ActivitySheetModal() {
         </div>
 
         {/* ── Footer (Screen only) ── */}
-        <div className="px-6 py-3 border-t border-white/10 bg-slate-950/80 flex items-center justify-between text-xs text-slate-400 flex-shrink-0 print:hidden">
-          <span className="flex items-center gap-1.5">
-            <Info size={13} className="text-emerald-400" />
-            ข้อมูลจะถูกบันทึกอัตโนมัติในเบราว์เซอร์ สามารถสั่งพิมพ์หรือบันทึกเป็น PDF เพื่อส่งครูได้
-          </span>
-          <div className="flex items-center gap-2">
+        <div className="px-4 sm:px-6 py-3 border-t border-white/10 bg-slate-950/90 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-400 flex-shrink-0 print:hidden">
+          <div className="flex items-center gap-1.5 text-[11px] sm:text-xs">
+            <Info size={13} className="text-emerald-400 flex-shrink-0" />
+            <span>ข้อมูลจะถูกจัดเก็บในเครื่องอัตโนมัติ สามารถสั่งพิมพ์หรือบันทึกเป็น PDF เพื่อส่งครูได้</span>
+          </div>
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <button
               id="close-worksheet-footer-btn"
               onClick={() => toggleActivitySheet(false)}
-              className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors focus-ring"
+              className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors focus-ring text-xs"
             >
               ปิดหน้าต่าง
             </button>
             <button
+              id="save-worksheet-footer-btn"
+              onClick={handleSave}
+              className="flex items-center gap-1.5 px-3.5 sm:px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all focus-ring shadow-md active:scale-95 text-xs"
+            >
+              <Save size={14} />
+              <span>บันทึกข้อมูลฐานที่ {station.number}</span>
+            </button>
+            <button
               id="print-worksheet-footer-btn"
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium transition-colors focus-ring"
+              className="flex items-center gap-1.5 px-3 sm:px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 hover:border-emerald-500/30 transition-colors focus-ring text-xs"
             >
               <Printer size={14} />
-              <span>พิมพ์ใบกิจกรรม (Print)</span>
+              <span className="hidden sm:inline">พิมพ์ / PDF</span>
             </button>
           </div>
         </div>
